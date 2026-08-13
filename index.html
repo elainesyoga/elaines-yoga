@@ -712,6 +712,7 @@ footer {
   <button class="tab-btn active" data-tab="journal">芳療日誌</button>
   <button class="tab-btn" data-tab="schedule">課程時刻表</button>
   <button class="tab-btn" data-tab="travel">旅行中的瑜珈</button>
+  <button class="tab-btn" data-tab="dosha">阿育吠陀測驗</button>
 </nav>
 
 <!-- ═══════════════════════════════════
@@ -2702,6 +2703,20 @@ footer {
 </div>
 </div><!-- /panel-travel -->
 
+<!-- ═══════════════════════════════════
+     DOSHA QUIZ PANEL
+═══════════════════════════════════ -->
+<div class="panel" id="panel-dosha">
+  <iframe
+    id="doshaFrame"
+    src="ayurveda-quiz.html"
+    style="display:block; width:100%; border:none; min-height:640px;"
+    loading="lazy"
+    title="阿育吠陀體質測驗">
+  </iframe>
+</div>
+<!-- /panel-dosha -->
+
 <!-- FOOTER -->
 <footer>
   <div class="footer-inner">
@@ -2720,6 +2735,14 @@ footer {
 </footer>
 
 <script>
+// ── DOSHA QUIZ IFRAME AUTO-HEIGHT ──
+window.addEventListener('message', function(e){
+  if (e.data && typeof e.data.doshaQuizHeight === 'number') {
+    var f = document.getElementById('doshaFrame');
+    if (f) f.style.height = e.data.doshaQuizHeight + 'px';
+  }
+});
+
 // ── TAB SWITCHING ──
 document.querySelectorAll('.tab-btn').forEach(btn => {
   btn.addEventListener('click', () => {

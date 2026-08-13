@@ -1,0 +1,910 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>阿育吠陀體質測驗｜Elaine's Yoga</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@500;600;700&family=Noto+Sans+TC:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#14213D;
+    --ink-soft:#1F2E52;
+    --paper:#FBF7EF;
+    --paper-dim:#F0EADA;
+    --fire:#E2572B;
+    --water:#2E86AB;
+    --earth:#8C6A4A;
+    --air:#9FB8AD;
+    --ether:#B79CED;
+    --vata: linear-gradient(135deg, var(--air), var(--ether));
+    --pitta: linear-gradient(135deg, var(--fire), #F2A154);
+    --kapha: linear-gradient(135deg, var(--earth), var(--water));
+    --vata-solid:#9FB8AD;
+    --pitta-solid:#E2572B;
+    --kapha-solid:#8C6A4A;
+    --radius:18px;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:var(--ink);
+    color:var(--paper);
+    font-family:'Noto Sans TC',sans-serif;
+    min-height:100vh;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    -webkit-font-smoothing:antialiased;
+    overflow-x:hidden;
+  }
+  body::before{
+    content:"";
+    position:fixed; inset:0;
+    background:
+      radial-gradient(circle at 15% 10%, rgba(183,156,237,0.18), transparent 40%),
+      radial-gradient(circle at 85% 85%, rgba(226,87,43,0.12), transparent 45%),
+      radial-gradient(circle at 80% 15%, rgba(46,134,171,0.14), transparent 40%);
+    pointer-events:none;
+    z-index:0;
+  }
+  #app{
+    width:100%;
+    max-width:640px;
+    padding:32px 20px 8px;
+    position:relative;
+    z-index:1;
+    flex:1;
+  }
+  h1,h2,h3{ font-family:'Noto Serif TC',serif; font-weight:700; margin:0 0 8px; }
+  .eyebrow{
+    font-size:12px; letter-spacing:.18em; text-transform:uppercase;
+    color:var(--ether); font-weight:500; margin-bottom:10px;
+  }
+  .screen{ display:none; animation:fadeIn .5s ease; }
+  .screen.active{ display:block; }
+  @keyframes fadeIn{ from{opacity:0; transform:translateY(6px);} to{opacity:1; transform:translateY(0);} }
+
+  /* ---------- Intro ---------- */
+  #screen-intro{ text-align:center; padding-top:20px; }
+  .element-ring{ width:180px; height:180px; margin:18px auto 22px; position:relative; }
+  .element-ring svg{ width:100%; height:100%; transform:rotate(-90deg); }
+  .element-ring .center-label{
+    position:absolute; inset:0; display:flex; align-items:center; justify-content:center;
+    flex-direction:column; font-family:'Noto Serif TC',serif;
+  }
+  .center-label .om{ font-size:34px; opacity:.9; }
+  h1.title{ font-size:30px; line-height:1.35; margin-bottom:14px; }
+  .subtitle{ color:#D9D3E6; font-size:15px; line-height:1.8; max-width:460px; margin:0 auto 26px; opacity:.85; }
+  .elements-legend{ display:flex; justify-content:center; gap:14px; flex-wrap:wrap; margin-bottom:30px; }
+  .element-chip{
+    display:flex; align-items:center; gap:6px; font-size:12px; color:#EDE8F5;
+    background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.08);
+    padding:6px 12px; border-radius:999px;
+  }
+  .dot{ width:9px; height:9px; border-radius:50%; display:inline-block; }
+  .dot.fire{background:var(--fire);} .dot.water{background:var(--water);}
+  .dot.earth{background:var(--earth);} .dot.air{background:var(--air);} .dot.ether{background:var(--ether);}
+
+  .btn{
+    font-family:'Noto Sans TC',sans-serif; font-weight:600; font-size:15px;
+    border:none; cursor:pointer; border-radius:999px; padding:15px 38px;
+    background:var(--paper); color:var(--ink); letter-spacing:.02em;
+    transition:transform .15s ease, box-shadow .15s ease;
+    box-shadow:0 8px 24px rgba(0,0,0,0.25);
+  }
+  .btn:hover{ transform:translateY(-2px); box-shadow:0 12px 28px rgba(0,0,0,0.32); }
+  .btn:active{ transform:translateY(0); }
+  .btn.ghost{
+    background:transparent; color:var(--paper); border:1px solid rgba(255,255,255,0.35);
+    box-shadow:none; font-weight:500; padding:13px 32px;
+  }
+  .meta-line{ margin-top:16px; font-size:12px; color:#B7B0C6; }
+
+  /* ---------- Quiz ---------- */
+  .quiz-header{ margin-bottom:22px; }
+  .progress-row{ display:flex; align-items:center; justify-content:space-between; margin-bottom:10px; }
+  .progress-count{ font-size:13px; color:#CFC9DE; letter-spacing:.04em; }
+  .progress-track{
+    width:100%; height:6px; background:rgba(255,255,255,0.1); border-radius:999px; overflow:hidden;
+  }
+  .progress-fill{
+    height:100%; border-radius:999px;
+    background:linear-gradient(90deg, var(--air), var(--fire), var(--earth));
+    width:0%; transition:width .4s ease;
+  }
+  .dosha-live{ display:flex; gap:10px; margin-top:16px; }
+  .dosha-meter{ flex:1; }
+  .dosha-meter-label{ font-size:11px; color:#CFC9DE; margin-bottom:5px; display:flex; justify-content:space-between; }
+  .dosha-meter-track{ height:5px; background:rgba(255,255,255,0.08); border-radius:999px; overflow:hidden; }
+  .dosha-meter-fill{ height:100%; border-radius:999px; width:0%; transition:width .4s ease; }
+  .dosha-meter-fill.vata{ background:var(--vata); }
+  .dosha-meter-fill.pitta{ background:var(--pitta); }
+  .dosha-meter-fill.kapha{ background:var(--kapha); }
+
+  .section-tag{
+    font-size:12px; color:var(--ether); letter-spacing:.12em; margin:26px 0 6px; font-weight:500;
+  }
+  .question-card{
+    background:var(--paper); color:var(--ink);
+    border-radius:var(--radius); padding:28px 24px 22px;
+    box-shadow:0 20px 50px rgba(0,0,0,0.35);
+  }
+  .question-index{ font-size:12px; color:#8A8377; margin-bottom:6px; letter-spacing:.06em; }
+  .question-text{ font-family:'Noto Serif TC',serif; font-size:20px; font-weight:600; margin-bottom:20px; line-height:1.5; }
+  .q-label-en{ font-family:'Noto Sans TC',sans-serif; font-size:12px; font-weight:500; color:#9C9484; letter-spacing:.05em; vertical-align:middle; margin-left:2px; }
+  .options{ display:flex; flex-direction:column; gap:10px; }
+  .option{
+    text-align:left; border:1.5px solid #E4DDCB; background:#fff;
+    border-radius:12px; padding:14px 16px; font-size:14.5px; line-height:1.6;
+    cursor:pointer; color:var(--ink); font-family:'Noto Sans TC',sans-serif;
+    transition:border-color .15s ease, transform .1s ease, background .15s ease;
+  }
+  .option:hover{ border-color:var(--ink); background:#FAF7EE; }
+  .option:active{ transform:scale(0.99); }
+  .option .zh{ font-weight:500; }
+  .option .en{ display:block; font-size:11.5px; color:#9C9484; margin-top:3px; }
+  .quiz-nav{ display:flex; justify-content:space-between; align-items:center; margin-top:20px; }
+  .link-btn{ background:none; border:none; color:#CFC9DE; font-size:13px; cursor:pointer; font-family:'Noto Sans TC',sans-serif; }
+  .link-btn:hover{ color:var(--paper); }
+
+  /* ---------- Result ---------- */
+  #screen-result{ padding-top:6px; }
+  .result-hero{ text-align:center; margin-bottom:8px; }
+  .result-ring{ width:220px; height:220px; margin:10px auto 16px; position:relative; }
+  .result-ring svg{ width:100%; height:100%; transform:rotate(-90deg); }
+  .result-ring .center-label{
+    position:absolute; inset:0; display:flex; flex-direction:column; align-items:center; justify-content:center;
+  }
+  .result-type-en{ font-size:11px; letter-spacing:.2em; color:#CFC9DE; text-transform:uppercase; margin-bottom:4px;}
+  .result-type-zh{ font-family:'Noto Serif TC',serif; font-size:28px; font-weight:700; color:var(--paper); }
+  .result-elements{ font-size:13px; color:#CFC9DE; margin-top:4px; }
+
+  .score-bars{ margin:26px 0 10px; display:flex; flex-direction:column; gap:14px; }
+  .score-row{ display:flex; align-items:center; gap:12px; }
+  .score-name{ width:64px; font-size:13px; color:#EDE8F5; font-weight:500; flex-shrink:0; }
+  .score-track{ flex:1; height:10px; background:rgba(255,255,255,0.08); border-radius:999px; overflow:hidden; }
+  .score-fill{ height:100%; border-radius:999px; width:0%; transition:width .8s cubic-bezier(.2,.8,.3,1); }
+  .score-fill.vata{ background:var(--vata); } .score-fill.pitta{ background:var(--pitta); } .score-fill.kapha{ background:var(--kapha); }
+  .score-pct{ width:42px; text-align:right; font-size:13px; color:#CFC9DE; }
+
+  .result-card{
+    background:var(--paper); color:var(--ink); border-radius:var(--radius);
+    padding:26px 24px; margin-top:26px; box-shadow:0 20px 50px rgba(0,0,0,0.3);
+  }
+  .result-card h3{ font-size:18px; margin-bottom:10px; }
+  .result-card p, .result-card li{ font-size:14px; line-height:1.85; color:#3B3527; }
+  .result-card ul{ margin:0 0 6px; padding-left:20px; }
+  .tag-row{ display:flex; gap:8px; margin-bottom:16px; flex-wrap:wrap; }
+  .tag{ font-size:11.5px; padding:5px 12px; border-radius:999px; background:#F0EADA; color:#6B6250; }
+  .divider{ height:1px; background:#E7E0CE; margin:18px 0; }
+  .draft-note{
+    font-size:12px; color:#8F87A0; text-align:center; margin:18px 0 4px; line-height:1.7;
+  }
+
+  /* ---------- Balance Quote ---------- */
+  .balance-quote{
+    margin-top:22px; padding:20px 22px; border-radius:14px;
+    background:rgba(159,184,173,0.12); border-left:3px solid var(--air);
+  }
+  .balance-quote p{
+    margin:0; font-family:'Noto Serif TC',serif; font-style:italic;
+    font-size:14.5px; line-height:1.9; color:#E7E3EF; text-align:center;
+  }
+  .balance-quote mark{
+    background:none; color:var(--air); font-weight:600; font-style:normal;
+  }
+
+  /* ---------- QA Accordion (claude.ai 風格：簡潔、留白、細分隔線) ---------- */
+  .qa-section{ margin-top:30px; }
+  .qa-heading{
+    font-size:12px; letter-spacing:.18em; text-transform:uppercase;
+    color:var(--ether); font-weight:500; margin-bottom:12px; text-align:center;
+  }
+  .qa-list{
+    background:var(--paper); border-radius:var(--radius); overflow:hidden;
+    box-shadow:0 20px 50px rgba(0,0,0,0.3);
+  }
+  .qa-item{ border-bottom:1px solid #EDE7D8; }
+  .qa-item:last-child{ border-bottom:none; }
+  .qa-question{
+    width:100%; display:flex; align-items:center; justify-content:space-between; gap:12px;
+    padding:16px 20px; background:none; border:none; cursor:pointer;
+    font-family:'Noto Sans TC',sans-serif; font-size:14px; font-weight:500;
+    color:var(--ink); text-align:left; transition:background .15s ease;
+  }
+  .qa-question:hover{ background:#FAF7EE; }
+  .qa-chevron{ flex-shrink:0; width:16px; height:16px; color:#9C9484; transition:transform .25s ease; }
+  .qa-item.open .qa-chevron{ transform:rotate(180deg); }
+  .qa-answer{ display:grid; grid-template-rows:0fr; transition:grid-template-rows .3s ease; }
+  .qa-item.open .qa-answer{ grid-template-rows:1fr; }
+  .qa-answer-inner{ overflow:hidden; }
+  .qa-answer-body{
+    padding:0 20px 18px; font-size:13.5px; line-height:1.9; color:#4A4436;
+  }
+  .qa-answer-body p{ margin:0 0 10px; }
+  .qa-answer-body p:last-child{ margin-bottom:0; }
+  .qa-answer-body ul{ margin:0 0 10px; padding-left:18px; }
+  .qa-answer-body li{ margin-bottom:5px; }
+  .qa-doshas{ list-style:none; padding:0; margin:0 0 10px; }
+  .qa-doshas li{ padding:3px 0; }
+  .qa-check{ color:#6E9B7C; font-weight:600; margin-right:4px; }
+  .qa-warn{ color:#C07878; font-weight:600; margin-right:4px; }
+  .qa-table{
+    width:100%; border-collapse:collapse; font-size:12.5px; margin-bottom:10px;
+  }
+  .qa-table th, .qa-table td{
+    padding:8px 10px; border:1px solid #E7E0CE; text-align:left;
+  }
+  .qa-table th{ background:#F0EADA; font-weight:600; color:#5A5342; }
+
+  /* 體質色點列 */
+  .dosha-row{ display:flex; flex-direction:column; gap:8px; margin:10px 0; }
+  .dosha-line{
+    display:flex; align-items:flex-start; gap:10px; padding:10px 12px;
+    border-radius:8px; background:#F6F2E6; border:0.5px solid #E7E0CE;
+  }
+  .dosha-dot{ width:8px; height:8px; border-radius:50%; flex-shrink:0; margin-top:6px; }
+  .dot-v{ background:#1D9E75; } .dot-p{ background:#D85A30; } .dot-k{ background:#378ADD; }
+  .dosha-text{ font-size:13px; color:#3B3527; line-height:1.7; }
+  .dosha-text .muted{ color:#9C9484; font-size:12px; }
+
+  /* 勾勾清單 */
+  .checklist{ display:flex; flex-direction:column; gap:6px; margin:10px 0; }
+  .check-item{ display:flex; align-items:flex-start; gap:8px; font-size:13px; color:#4A4436; line-height:1.7; }
+  .check-icon{ flex-shrink:0; margin-top:2px; color:#3B6D11; font-weight:600; }
+
+  /* 警示框 */
+  .warn-box{ background:#FAEEDA; border:0.5px solid #FAC775; border-radius:8px; padding:10px 12px; margin:10px 0; }
+  .warn-title{ font-size:13px; font-weight:600; color:#854F0B; margin-bottom:6px; }
+  .warn-list{ display:flex; flex-direction:column; gap:4px; }
+  .warn-list span{ font-size:13px; color:#4A4436; display:flex; align-items:flex-start; gap:6px; line-height:1.7; }
+
+  .quiz-nav .btn{ padding:13px 30px; font-size:14px; }
+  #screen-result .btn.ghost{ display:block; margin:26px auto 0; }
+
+  /* ---------- Footer (保留原本 LINE 聯絡區塊位置) ---------- */
+  footer#site-footer{
+    width:100%; background:var(--ink-soft); border-top:1px solid rgba(255,255,255,0.08);
+    padding:26px 20px 30px; text-align:center; position:relative; z-index:1;
+  }
+  footer#site-footer .footer-inner{ max-width:640px; margin:0 auto; }
+  footer#site-footer .footer-label{
+    font-size:11px; letter-spacing:.25em; color:#B7B0C6; text-transform:uppercase; margin-bottom:14px;
+  }
+  .line-connect-box{
+    display:inline-flex; align-items:center; gap:12px;
+    padding:12px 22px; border-radius:12px;
+    background:rgba(255,255,255,0.06); border:1px solid rgba(255,255,255,0.14);
+    text-decoration:none; transition:background .2s ease, border-color .2s ease;
+  }
+  .line-connect-box:hover{ background:rgba(255,255,255,0.1); border-color:rgba(255,255,255,0.28); }
+  .line-icon{ width:28px; height:28px; flex-shrink:0; }
+  .line-icon svg{ width:100%; height:100%; fill:var(--ether); }
+  .line-connect-text{ font-size:13.5px; color:var(--paper); font-weight:500; text-align:left; }
+  .line-connect-sub{ font-size:11.5px; color:#B7B0C6; margin-top:2px; text-align:left; }
+  .footer-copy{ font-size:11px; color:#8A83A0; margin-top:18px; }
+
+  @media (max-width:480px){
+    h1.title{ font-size:24px; }
+    .question-text{ font-size:18px; }
+    .element-ring, .result-ring{ width:150px; height:150px; }
+  }
+</style>
+</head>
+<body>
+
+<div id="app">
+
+  <!-- ===================== INTRO ===================== -->
+  <section id="screen-intro" class="screen active">
+    <div class="eyebrow">Elaine's Yoga · 阿育吠陀</div>
+    <div class="element-ring">
+      <svg viewBox="0 0 100 100">
+        <circle cx="50" cy="50" r="44" fill="none" stroke="rgba(255,255,255,0.08)" stroke-width="4"/>
+        <circle cx="50" cy="50" r="44" fill="none" stroke="url(#introGrad)" stroke-width="4"
+          stroke-dasharray="276.5" stroke-dashoffset="0" stroke-linecap="round"/>
+        <defs>
+          <linearGradient id="introGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stop-color="#9FB8AD"/>
+            <stop offset="35%" stop-color="#B79CED"/>
+            <stop offset="65%" stop-color="#E2572B"/>
+            <stop offset="100%" stop-color="#8C6A4A"/>
+          </linearGradient>
+        </defs>
+      </svg>
+      <div class="center-label"><span class="om">ॐ</span></div>
+    </div>
+    <h1 class="title">找出你的<br>主導體質 · Dosha</h1>
+    <p class="subtitle">
+      阿育吠陀相信，每個人都是氣、空、火、水、土五大元素的獨特組合，
+      形成 Vata（風）、Pitta（火）、Kapha（水）三種體質。
+      透過以下 38 題，覺察你此刻身心的主導傾向，作為練習與生活調整的參考。
+    </p>
+    <div class="elements-legend">
+      <span class="element-chip"><span class="dot air"></span>氣 Air</span>
+      <span class="element-chip"><span class="dot ether"></span>空 Ether</span>
+      <span class="element-chip"><span class="dot fire"></span>火 Fire</span>
+      <span class="element-chip"><span class="dot water"></span>水 Water</span>
+      <span class="element-chip"><span class="dot earth"></span>土 Earth</span>
+    </div>
+    <button class="btn" onclick="startQuiz()">開始測驗</button>
+    <div class="meta-line">共 38 題．單選．約需 5–7 分鐘</div>
+  </section>
+
+  <!-- ===================== QUIZ ===================== -->
+  <section id="screen-quiz" class="screen">
+    <div class="quiz-header">
+      <div class="progress-row">
+        <span class="progress-count" id="progressCount">已完成 0 / 38 題</span>
+        <span class="progress-count" id="progressPct">0%</span>
+      </div>
+      <div class="progress-track"><div class="progress-fill" id="progressFill"></div></div>
+
+      <div class="dosha-live">
+        <div class="dosha-meter">
+          <div class="dosha-meter-label"><span>Vata 風</span><span id="liveVataN">0</span></div>
+          <div class="dosha-meter-track"><div class="dosha-meter-fill vata" id="liveVata"></div></div>
+        </div>
+        <div class="dosha-meter">
+          <div class="dosha-meter-label"><span>Pitta 火</span><span id="livePittaN">0</span></div>
+          <div class="dosha-meter-track"><div class="dosha-meter-fill pitta" id="livePitta"></div></div>
+        </div>
+        <div class="dosha-meter">
+          <div class="dosha-meter-label"><span>Kapha 水</span><span id="liveKaphaN">0</span></div>
+          <div class="dosha-meter-track"><div class="dosha-meter-fill kapha" id="liveKapha"></div></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="section-tag" id="sectionTag"></div>
+    <div class="question-card">
+      <div class="question-index" id="questionIndex"></div>
+      <div class="question-text" id="questionText"></div>
+      <div class="options" id="optionsWrap"></div>
+    </div>
+
+    <div class="quiz-nav">
+      <button class="link-btn" id="backBtn" onclick="goBack()">← 上一題</button>
+      <button class="link-btn" onclick="restartQuiz()">重新開始</button>
+    </div>
+  </section>
+
+  <!-- ===================== RESULT ===================== -->
+  <section id="screen-result" class="screen">
+    <div class="result-hero">
+      <div class="eyebrow">你的測驗結果</div>
+      <div class="result-ring">
+        <svg viewBox="0 0 100 100" id="resultRingSvg">
+          <circle cx="50" cy="50" r="44" fill="none" stroke="rgba(255,255,255,0.08)" stroke-width="6"/>
+        </svg>
+        <div class="center-label">
+          <div class="result-type-en" id="resultTypeEn">YOUR DOSHA</div>
+          <div class="result-type-zh" id="resultTypeZh">—</div>
+          <div class="result-elements" id="resultElements"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="score-bars" id="scoreBars"></div>
+
+    <div class="result-card" id="resultCard"></div>
+
+    <div class="balance-quote">
+      <p>在阿育吠陀裡，最重要的是達到體質的<mark>平衡</mark>，<br>而非過度傾向於某一體質。</p>
+    </div>
+
+    <div class="draft-note">
+      * 以上分析說明較為一般，每個人的體質仍有個別差異，想更深入了解自己的狀況，歡迎與 Elaine 聯絡協助。
+    </div>
+
+    <div class="qa-section">
+      <div class="qa-heading">常見問題 · FAQ</div>
+      <div class="qa-list" id="qaList"></div>
+    </div>
+
+    <button class="btn ghost" onclick="restartQuiz()">重新測驗</button>
+  </section>
+
+</div>
+
+<!-- ===================== FOOTER：保留原本聯絡 LINE 區塊 ===================== -->
+<footer id="site-footer">
+  <div class="footer-inner">
+    <div class="footer-label">聯絡 · 預約課程</div>
+    <a class="line-connect-box" href="https://line.me/R/ti/p/@103uslmn" target="_blank" rel="noopener">
+      <div class="line-icon">
+        <svg viewBox="0 0 24 24"><path d="M19.365 9.863c.349 0 .63.285.63.631 0 .345-.281.63-.63.63H17.61v1.125h1.755c.349 0 .63.283.63.63 0 .344-.281.629-.63.629h-2.386c-.345 0-.627-.285-.627-.629V8.108c0-.345.282-.63.627-.63h2.386c.349 0 .63.285.63.63 0 .349-.281.63-.63.63H17.61v1.125h1.755zm-3.855 3.016c0 .27-.174.51-.432.596-.064.021-.133.031-.199.031-.211 0-.391-.09-.51-.25l-2.443-3.317v2.94c0 .344-.279.629-.631.629-.346 0-.626-.285-.626-.629V8.108c0-.27.173-.51.43-.595.06-.023.136-.033.194-.033.195 0 .375.104.495.254l2.462 3.33V8.108c0-.345.282-.63.63-.63.345 0 .63.285.63.63v4.771zm-5.741 0c0 .344-.282.629-.631.629-.345 0-.627-.285-.627-.629V8.108c0-.345.282-.63.627-.63.349 0 .631.285.631.63v4.771zm-2.466.629H4.917c-.345 0-.63-.285-.63-.629V8.108c0-.345.285-.63.63-.63.348 0 .63.285.63.63v4.141h1.756c.348 0 .629.283.629.63 0 .344-.281.629-.629.629M24 10.314C24 4.943 18.615.572 12 .572S0 4.943 0 10.314c0 4.811 4.27 8.842 10.035 9.608.391.082.923.258 1.058.59.12.301.079.766.038 1.08l-.164 1.02c-.045.301-.24 1.186 1.049.645 1.291-.539 6.916-4.078 9.436-6.975C23.176 14.393 24 12.458 24 10.314"/></svg>
+      </div>
+      <div>
+        <div class="line-connect-text">加入 LINE@ 詢問課程</div>
+        <div class="line-connect-sub">@103uslmn · 歡迎私訊預約</div>
+      </div>
+    </a>
+    <div class="footer-copy">© 2026 Elaine's Yoga</div>
+  </div>
+</footer>
+
+<script>
+/* ============================================================
+   題庫：38 題，依阿育吠陀三體質（Vata / Pitta / Kapha）分類計分
+   ============================================================ */
+const questions = [
+  // I. 外貌特徵
+  {section:"I. 外貌特徵 · Physical Appearance", text:"你的體型比較接近哪一種？", label:"Body Type", options:[
+    {zh:"體格較為單薄，身型瘦長、苗條", en:"Thin, slender, or tall frame", dosha:"vata"},
+    {zh:"中等體格，具均衡肌肉", en:"Medium build, balanced musculature", dosha:"pitta"},
+    {zh:"體格強壯，身材高大", en:"Sturdy build, large frame", dosha:"kapha"}]},
+  {section:"I. 外貌特徵 · Physical Appearance", text:"你的體重狀況比較像？", label:"Weight", options:[
+    {zh:"偏輕，難以增重", en:"Light, difficult to gain weight", dosha:"vata"},
+    {zh:"體重穩定，容易瘦下來，增重時平均分布全身", en:"Stable weight, easy to lose; even weight gain", dosha:"pitta"},
+    {zh:"容易增重，尤其在臀部和大腿", en:"Gains weight easily, especially hips/thighs", dosha:"kapha"}]},
+  {section:"I. 外貌特徵 · Physical Appearance", text:"你的皮膚類型比較接近？", label:"Skin Type", options:[
+    {zh:"乾性，皮膚較薄且能看見血管", en:"Dry, thin skin, veins visible", dosha:"vata"},
+    {zh:"油性，泛紅及容易長痘痘", en:"Oily, reddish, prone to acne", dosha:"pitta"},
+    {zh:"混合性，皮膚水潤且光滑", en:"Combination, moist and smooth", dosha:"kapha"}]},
+  {section:"I. 外貌特徵 · Physical Appearance", text:"你的體溫調節比較像？", label:"Body Temperature", options:[
+    {zh:"體溫偏低而寒，手腳冰冷，喜愛溫暖天氣", en:"Low temperature, cold hands/feet, prefers warmth", dosha:"vata"},
+    {zh:"體溫偏高而熱，喜愛涼爽天氣", en:"High temperature, prefers cool weather", dosha:"pitta"},
+    {zh:"體溫能適應不同天氣，不喜太冷潮濕", en:"Adaptable, dislikes cold and damp", dosha:"kapha"}]},
+  {section:"I. 外貌特徵 · Physical Appearance", text:"你的髮質比較接近？", label:"Hair", options:[
+    {zh:"粗糙、乾燥、薄，髮尾易開岔", en:"Rough, dry, thin, split ends", dosha:"vata"},
+    {zh:"稀疏、幼軟、油膩，較早出現白髮或禿頭", en:"Thin, soft, oily, premature graying/balding", dosha:"pitta"},
+    {zh:"濃密、油膩、捲曲，帶有光澤", en:"Thick, oily, curly, lustrous", dosha:"kapha"}]},
+  {section:"I. 外貌特徵 · Physical Appearance", text:"你的膚色特徵比較像？", label:"Skin Tone", options:[
+    {zh:"偏黑（家族基因），容易曬黑", en:"Darker toned, tans easily", dosha:"vata"},
+    {zh:"皮膚白皙，容易曬傷，雀斑黑斑痣較多", en:"Fair, burns easily, freckles/moles", dosha:"pitta"},
+    {zh:"膚色均勻", en:"Even skin tone", dosha:"kapha"}]},
+  {section:"I. 外貌特徵 · Physical Appearance", text:"你的眼睛特徵比較接近？", label:"Eyes", options:[
+    {zh:"細小、深色，眼神較不穩定，眼窩凹陷", en:"Small, dark, unsteady gaze, sunken", dosha:"vata"},
+    {zh:"中型，眼色偏綠、黃或灰色", en:"Medium, greenish/yellowish/gray", dosha:"pitta"},
+    {zh:"大，眼神慈祥，偏咖啡色", en:"Large, kind gaze, brownish", dosha:"kapha"}]},
+  {section:"I. 外貌特徵 · Physical Appearance", text:"你的手腳指頭形狀比較像？", label:"Fingers & Toes", options:[
+    {zh:"細長、尖細", en:"Long and slender fingers/toes", dosha:"vata"},
+    {zh:"中等大小", en:"Medium-sized", dosha:"pitta"},
+    {zh:"短而小", en:"Short and small", dosha:"kapha"}]},
+  {section:"I. 外貌特徵 · Physical Appearance", text:"你的牙齒狀況比較接近？", label:"Teeth", options:[
+    {zh:"暴牙、細小、歪斜，排列不甚整齊", en:"Protruding, small, irregular", dosha:"vata"},
+    {zh:"中等大小、整齊，常出血或牙齦敏感", en:"Medium, regular, sensitive gums", dosha:"pitta"},
+    {zh:"大、整齊、潔白", en:"Large, regular, white", dosha:"kapha"}]},
+
+  // II. 身體機能
+  {section:"II. 身體機能 · Physical Function", text:"你的流汗狀況比較像？", label:"Perspiration", options:[
+    {zh:"少汗，無氣味", en:"Scanty sweat, odorless", dosha:"vata"},
+    {zh:"大量流汗，氣味強烈", en:"Profuse sweat, strong odor", dosha:"pitta"},
+    {zh:"汗水及氣味適中", en:"Moderate sweat and odor", dosha:"kapha"}]},
+  {section:"II. 身體機能 · Physical Function", text:"你的免疫力狀況比較接近？", label:"Immunity", options:[
+    {zh:"偏低，多變，較容易生病", en:"Low, variable, prone to illness", dosha:"vata"},
+    {zh:"中等而波動", en:"Medium and fluctuating", dosha:"pitta"},
+    {zh:"高，較少生病", en:"High, rarely falls ill", dosha:"kapha"}]},
+  {section:"II. 身體機能 · Physical Function", text:"你平常的身體動作比較像？", label:"Movement", options:[
+    {zh:"過度活躍，動作多", en:"Hyperactive, moves a lot", dosha:"vata"},
+    {zh:"適中而具目的性", en:"Moderate and purposeful", dosha:"pitta"},
+    {zh:"緩慢、冷靜，喜歡休息", en:"Slow, calm, prefers resting", dosha:"kapha"}]},
+  {section:"II. 身體機能 · Physical Function", text:"你的骨骼關節狀況比較接近？", label:"Bones & Joints", options:[
+    {zh:"骨骼突出，脆弱且偶爾疼痛，容易發出聲響", en:"Prominent, fragile, occasional cracking", dosha:"vata"},
+    {zh:"關節靈活而柔軟", en:"Flexible and soft joints", dosha:"pitta"},
+    {zh:"骨骼大而結實", en:"Large and sturdy bones", dosha:"kapha"}]},
+  {section:"II. 身體機能 · Physical Function", text:"你的食慾狀況比較像？", label:"Appetite", options:[
+    {zh:"不規律", en:"Irregular", dosha:"vata"},
+    {zh:"食量大，需時常進食", en:"Strong appetite, eats frequently", dosha:"pitta"},
+    {zh:"即使飢餓也能承受", en:"Can tolerate hunger", dosha:"kapha"}]},
+  {section:"II. 身體機能 · Physical Function", text:"你的消化能力比較接近？", label:"Digestion", options:[
+    {zh:"容易受影響，時好時壞", en:"Easily affected, variable digestion", dosha:"vata"},
+    {zh:"消化快速，消化能力強", en:"Fast digestion, strong power", dosha:"pitta"},
+    {zh:"消化速度緩慢，能力較弱", en:"Slow digestion, weak power", dosha:"kapha"}]},
+  {section:"II. 身體機能 · Physical Function", text:"你比較容易出現哪種消化問題？", label:"Digestive Issues", options:[
+    {zh:"容易脹氣", en:"Prone to bloating/gas", dosha:"vata"},
+    {zh:"胸口灼熱且有胃酸", en:"Heartburn and acidity", dosha:"pitta"},
+    {zh:"進食後感到消化不良", en:"Indigestion after meals", dosha:"kapha"}]},
+  {section:"II. 身體機能 · Physical Function", text:"你的排泄狀態比較接近？", label:"Excretion", options:[
+    {zh:"乾、硬，有便秘問題", en:"Dry, hard, constipation-prone", dosha:"vata"},
+    {zh:"量大、軟到正常", en:"Large quantity, soft to normal", dosha:"pitta"},
+    {zh:"量多、規則", en:"Large quantity, regular", dosha:"kapha"}]},
+
+  // III. 生理指標
+  {section:"III. 生理指標 · Vital Signs", text:"你安靜狀態下的脈搏速度比較接近？", label:"Pulse Rate", options:[
+    {zh:"較快（女 80–100 / 男 70–90）", en:"Fast", dosha:"vata"},
+    {zh:"中等（女 70–80 / 男 60–70）", en:"Moderate", dosha:"pitta"},
+    {zh:"較慢（女 60–70 / 男 50–60）", en:"Slow", dosha:"kapha"}]},
+
+  // IV. 睡眠與心智
+  {section:"IV. 睡眠與心智 · Sleep & Mind", text:"你的睡眠品質比較接近？", label:"Sleep Quality", options:[
+    {zh:"難以入睡，偶爾在睡夢中醒來", en:"Hard to fall asleep, wakes at night", dosha:"vata"},
+    {zh:"能正常入睡", en:"Normal sleep", dosha:"pitta"},
+    {zh:"能進入長時間的深層睡眠", en:"Long, deep sleep", dosha:"kapha"}]},
+  {section:"IV. 睡眠與心智 · Sleep & Mind", text:"你的思考習慣比較像？", label:"Thinking Style", options:[
+    {zh:"通常以語言思考", en:"Verbal thinking", dosha:"vata"},
+    {zh:"大量視覺圖像", en:"Visual images", dosha:"pitta"},
+    {zh:"憑感覺與情緒", en:"Based on feelings and emotions", dosha:"kapha"}]},
+  {section:"IV. 睡眠與心智 · Sleep & Mind", text:"你的社交能力比較接近？", label:"Social Ability", options:[
+    {zh:"容易相處，但傾向膚淺", en:"Easy-going but can be superficial", dosha:"vata"},
+    {zh:"社交手腕強，具支配性", en:"Strong social skills, dominant", dosha:"pitta"},
+    {zh:"起初較難相處", en:"Can be difficult to approach initially", dosha:"kapha"}]},
+  {section:"IV. 睡眠與心智 · Sleep & Mind", text:"你的說話方式比較像？", label:"Speech", options:[
+    {zh:"快，有時詞不達意、雜亂無章", en:"Fast, sometimes incoherent", dosha:"vata"},
+    {zh:"快速、銳利、清晰", en:"Fast, sharp, clear", dosha:"pitta"},
+    {zh:"緩慢、清晰、溫和", en:"Slow, clear, gentle", dosha:"kapha"}]},
+  {section:"IV. 睡眠與心智 · Sleep & Mind", text:"你的工作方式比較接近？", label:"Working Style", options:[
+    {zh:"同時進行很多事，但大部分難以完成", en:"Multitasking, struggles to finish", dosha:"vata"},
+    {zh:"有規劃、有計畫，目標明顯", en:"Organized, planned, goal-oriented", dosha:"pitta"},
+    {zh:"不愛變動，喜歡簡單", en:"Dislikes change, prefers simplicity", dosha:"kapha"}]},
+  {section:"IV. 睡眠與心智 · Sleep & Mind", text:"你的決策方式比較像？", label:"Decisiveness", options:[
+    {zh:"不容易下決定，常常變化", en:"Indecisive, constantly changing", dosha:"vata"},
+    {zh:"可以馬上下決定，善於分辨重要性", en:"Quick decision-maker, prioritizes well", dosha:"pitta"},
+    {zh:"需要多一點時間，但決定後會做到底", en:"Takes time, but stays committed", dosha:"kapha"}]},
+  {section:"IV. 睡眠與心智 · Sleep & Mind", text:"你的忍耐力狀況比較接近？", label:"Endurance", options:[
+    {zh:"缺乏耐力，具爆發力但很快耗盡", en:"Lacks endurance, short bursts", dosha:"vata"},
+    {zh:"適中而具專注力", en:"Moderate and focused", dosha:"pitta"},
+    {zh:"高而穩定，開始較慢但堅韌度良好", en:"High and steady, slow start, great stamina", dosha:"kapha"}]},
+  {section:"IV. 睡眠與心智 · Sleep & Mind", text:"你的記憶力比較像？", label:"Memory", options:[
+    {zh:"短期記憶力強，但無法維持長期記憶", en:"Strong short-term, poor long-term", dosha:"vata"},
+    {zh:"記憶力正常，大多與事實相符", en:"Normal memory, usually accurate", dosha:"pitta"},
+    {zh:"短期記憶力弱，但能維持深刻的長期記憶", en:"Weak short-term, strong long-term", dosha:"kapha"}]},
+  {section:"IV. 睡眠與心智 · Sleep & Mind", text:"你的思考力狀況比較接近？", label:"Thinking Capacity", options:[
+    {zh:"精力充沛，想東想西，但專注力短暫", en:"Energetic, scattered, short attention", dosha:"vata"},
+    {zh:"有目標、有邏輯、理性務實", en:"Goal-oriented, logical, practical", dosha:"pitta"},
+    {zh:"思考緩慢，但不輕易改變", en:"Slow thinking, firm in beliefs", dosha:"kapha"}]},
+
+  // V. 情感與情緒
+  {section:"V. 情感與情緒 · Emotions & Social", text:"你的性慾傾向比較像？", label:"Libido", options:[
+    {zh:"強烈，有幻想，但體力不足", en:"Strong, imaginative, low stamina", dosha:"vata"},
+    {zh:"中度，熱情型，喜歡主導引領", en:"Moderate, passionate, likes to lead", dosha:"pitta"},
+    {zh:"欲望一致，溫柔並充滿愛", en:"Consistent, gentle, loving", dosha:"kapha"}]},
+  {section:"V. 情感與情緒 · Emotions & Social", text:"你的情緒變化比較接近？", label:"Emotion", options:[
+    {zh:"起伏不定", en:"Fluctuating", dosha:"vata"},
+    {zh:"變化緩慢而穩定", en:"Slow and steady change", dosha:"pitta"},
+    {zh:"不容易改變", en:"Hard to change", dosha:"kapha"}]},
+  {section:"V. 情感與情緒 · Emotions & Social", text:"你的友誼狀況比較像？", label:"Friendship", options:[
+    {zh:"朋友很多，但有些並不深入", en:"Many friends, some superficial", dosha:"vata"},
+    {zh:"有幾個甚至不少知心朋友", en:"Few or many close friends", dosha:"pitta"},
+    {zh:"朋友不算多，但友誼深厚穩固", en:"Few friends, deep and stable", dosha:"kapha"}]},
+  {section:"V. 情感與情緒 · Emotions & Social", text:"你對天氣的敏感度比較接近？", label:"Weather Sensitivity", options:[
+    {zh:"討厭寒冷", en:"Dislikes cold", dosha:"vata"},
+    {zh:"討厭炎熱", en:"Dislikes heat", dosha:"pitta"},
+    {zh:"討厭潮濕、寒冷的天氣", en:"Dislikes damp and cold", dosha:"kapha"}]},
+  {section:"V. 情感與情緒 · Emotions & Social", text:"你的信念與立場比較像？", label:"Beliefs", options:[
+    {zh:"多變、乖僻", en:"Changeable, eccentric", dosha:"vata"},
+    {zh:"強勢、果斷", en:"Strong-willed, decisive", dosha:"pitta"},
+    {zh:"穩定，緩慢適量變化", en:"Stable, slow to change", dosha:"kapha"}]},
+  {section:"V. 情感與情緒 · Emotions & Social", text:"你在正面狀態下的特質比較接近？", label:"Positive Traits", options:[
+    {zh:"適應力強，富創意，直覺敏銳", en:"Adaptable, creative, intuitive", dosha:"vata"},
+    {zh:"勇氣，樂於助人，獨立", en:"Courageous, helpful, independent", dosha:"pitta"},
+    {zh:"充滿愛心，平靜，務實", en:"Loving, calm, practical", dosha:"kapha"}]},
+  {section:"V. 情感與情緒 · Emotions & Social", text:"你在壓力下比較容易出現哪種負面情緒？", label:"Negative Traits", options:[
+    {zh:"焦慮、害怕、緊張", en:"Anxious, fearful, nervous", dosha:"vata"},
+    {zh:"缺乏耐性，常生氣、易怒", en:"Impatient, angry, irritable", dosha:"pitta"},
+    {zh:"寂寞、抑鬱、嫉妒", en:"Lonely, depressed, jealous", dosha:"kapha"}]},
+
+  // VI. 性格與生活
+  {section:"VI. 性格與生活 · Personality & Lifestyle", text:"你的整體性格比較接近？", label:"Personality", options:[
+    {zh:"熱情外向、富創意", en:"Enthusiastic, extroverted, creative", dosha:"vata"},
+    {zh:"容易受人影響、具野心", en:"Easily influenced, ambitious", dosha:"pitta"},
+    {zh:"容易與人相處、有耐性、樂於付出", en:"Easy-going, patient, generous", dosha:"kapha"}]},
+  {section:"VI. 性格與生活 · Personality & Lifestyle", text:"你表達愛意的方式比較像？", label:"Expressing Love", options:[
+    {zh:"用言語", en:"Words", dosha:"vata"},
+    {zh:"送禮物", en:"Gifts", dosha:"pitta"},
+    {zh:"憑感覺／肢體接觸", en:"Touch / feeling", dosha:"kapha"}]},
+  {section:"VI. 性格與生活 · Personality & Lifestyle", text:"你的購物習慣比較接近？", label:"Shopping", options:[
+    {zh:"衝動型消費者，買後常忘記自己買過什麼", en:"Impulsive buyer, forgets purchases", dosha:"vata"},
+    {zh:"精明型消費者，只買值得的物品", en:"Shrewd buyer, only worthwhile items", dosha:"pitta"},
+    {zh:"謹慎型消費者，需長時間考慮", en:"Cautious buyer, takes time to decide", dosha:"kapha"}]},
+  {section:"VI. 性格與生活 · Personality & Lifestyle", text:"你的最大興趣比較接近？", label:"Main Interest", options:[
+    {zh:"藝術文學類，如哲學、美術、靈性", en:"Art/Literature, Philosophy, Spirituality", dosha:"vata"},
+    {zh:"邏輯類，如商業、科學、法律", en:"Logic, Business, Science, Law", dosha:"pitta"},
+    {zh:"實踐類，如輔導、教育、人力資源", en:"Practical, Counseling, Education, HR", dosha:"kapha"}]},
+];
+
+/* ============================================================
+   結果頁內容（草稿，待 Elaine 老師補充／校訂）
+   ============================================================ */
+const doshaInfo = {
+  vata: {
+    zh:"Vata 風型", en:"AIR + ETHER · 氣 + 空",
+    tags:["創意","靈活","敏捷"],
+    trait:"Vata 的主導元素是氣與空，體現在你身上的，往往是敏捷的思緒、豐富的創意與強大的適應力。你可能行動快、興趣廣，社交上容易親近，但精力也容易忽高忽低，專注力較難長時間維持。",
+    imbalance:"失衡時容易出現焦慮、緊張、失眠、消化不穩定與怕冷等狀況，身心會感覺「飄」而缺乏根基。",
+    diet:["以溫熱、濕潤、易消化的熟食為主，減少生冷、乾燥、氣味重的食物","規律用餐時間，比忽略吃飯更重要","可多攝取甜、酸、鹹味的天然食物來安定神經系統"],
+    practice:["練習步調宜緩慢、扎根：如 Hatha、陰瑜伽、修復瑜伽","體式上多加入站姿與跪姿的落地感，減少過度伸展與快速變換","呼吸法建議：腹式呼吸、Nadi Shodhana（左右鼻孔交替呼吸）以安定神經系統","作息規律、固定時間睡眠，是 Vata 體質最重要的功課"]
+  },
+  pitta: {
+    zh:"Pitta 火型", en:"FIRE + WATER · 火 + 水",
+    tags:["專注","果決","領導力"],
+    trait:"Pitta 的主導元素是火與水，展現為清晰的邏輯、強烈的企圖心與領導特質。你消化力強、決策果斷、目標明確，是天生的行動派，但也容易因為求好心切而給自己過大的壓力。",
+    imbalance:"失衡時容易出現易怒、沒耐性、發炎（皮膚泛紅、長痘）、胃酸過多與過熱等狀況。",
+    diet:["以清涼、清爽、不過度辛辣油炸的食物為主，避免過度飲酒與刺激性食物","多攝取甜、苦、澀味的食物來平衡體內的熱","用餐不宜過度延遲，避免因飢餓而情緒暴躁"],
+    practice:["練習步調宜適中，避免過度競爭或求勝心態強烈的練習方式","可選擇月式拜日（Chandra Namaskar）取代較燥熱的日式拜日","呼吸法建議：Sheetali／Sheetkari（清涼調息法）幫助降溫、平息情緒","練習時段避免正午高溫時段，傍晚或清晨較合適"]
+  },
+  kapha: {
+    zh:"Kapha 水型", en:"EARTH + WATER · 土 + 水",
+    tags:["穩定","溫柔","堅韌"],
+    trait:"Kapha 的主導元素是土與水，展現為穩定的性情、深厚持久的耐力與溫柔包容的個性。你不容易被外界輕易動搖，友誼與感情都長久深刻，但也容易在慣性中停滯，動力較慢啟動。",
+    imbalance:"失衡時容易出現遲滯、嗜睡、體重增加、消化遲緩，情緒上容易感到低落或提不起勁。",
+    diet:["以清淡、溫熱、乾爽、帶點辛香的食物為主，減少乳製品、甜食與油膩食物","多攝取辛、苦、澀味的食物來提振代謝","早餐可以清淡甚至省略，避免加重消化系統的負擔"],
+    practice:["練習步調宜有活力、具挑戰性：如 Vinyasa、Ashtanga、較動態的流動練習","多加入後彎與開胸體式，提振氣血循環","呼吸法建議：Kapalabhati（頭顱清明呼吸法）啟動代謝與清醒度","建立固定的晨間練習習慣，克服惰性是關鍵"]
+  }
+};
+
+/* ============================================================
+   QA 常見問題資料
+   ============================================================ */
+const qaData = [
+  {
+    q:"什麼是三大體質（Three Doshas）？",
+    html:`<p>阿育吠陀認為每個人都是由風能（Vata）、火能（Pitta）、水能（Kapha）三種能量以不同比例組合而成。這不是抽屜式的分類，而是一個光譜——你可能風能最高，但火能也不低。分數最高的是你的主要體質，第二高是次體質，兩者都值得參考。</p><p>了解自己的體質後，就可以開始對應地調整飲食、運動和生活節奏，而不是一套標準適用所有人。</p>`
+  },
+  {
+    q:"為什麼我測完幾種體質分數都很接近？",
+    html:`<p>這非常正常，大多數人都是混合體質，例如 Vata-Pitta 或 Pitta-Kapha。阿育吠陀本來就不主張把人硬塞進單一框框。</p><p>比起執著於哪種體質最高，更值得觀察的是：目前哪一種能量最容易讓你感到失衡？那個才是當下最需要照顧的方向。</p>`
+  },
+  {
+    q:"體質會改變嗎？",
+    html:`<p>先天體質（Prakriti）是你出生時就帶來的底色，相對穩定；但當下的狀態（Vikriti）會隨著季節、壓力、睡眠、飲食而變化。</p><p>簡單說：底色不太變，但顯現出來的能量偏向是浮動的。這也是為什麼建議每個季節可以重新觀察一次自己的狀態，而不是測一次就定終身。</p>`
+  },
+  {
+    q:"阿育吠陀與中醫體質有什麼不同？",
+    html:`<p>兩者都是幾千年的體質學說，但底層系統不同。阿育吠陀以五大元素（空、風、火、水、土）為基礎，發展出三種 Dosha；中醫則以氣血陰陽為核心，分出平和、氣虛、陽虛、陰虛、痰濕等九種體質。</p><p>兩套系統可以互相參照、互相啟發，但不建議把兩者的診斷標準混在一起使用，因為概念框架本來就不同。</p>`
+  },
+  {
+    q:"知道體質後，具體應該如何調整？",
+    html:`<p>建議先從最小的改變開始：</p><p><strong>飲食</strong>是最直接的入口。依體質選擇適合的溫度、口味和份量——風型人需要溫熱滋潤，火型人需要清涼降火，水型人需要輕盈刺激。</p><p><strong>瑜伽練習</strong>也可以對應調整。風型和火型適合陰瑜伽等溫和舒展，水型則適合 Ashtanga 等動態練習。</p><p>先選一個最容易做到的改變，觀察身體的回應，再慢慢延伸到作息和生活習慣。</p>`
+  },
+  {
+    q:"體質測驗可以代替醫生診斷嗎？",
+    html:`<p><strong>不可以。</strong>阿育吠陀體質測驗是養生與生活調整的參考工具，不是醫療診斷。它幫助你更了解自己的傾向，讓日常選擇更有意識，但無法取代專業醫療評估。</p><p>如果你有任何健康問題、慢性疾病、懷孕或正在服藥，請先諮詢醫生，再來考慮如何搭配阿育吠陀的生活調整。</p>`
+  },
+  {
+    q:"五大元素與三大體質是什麼關係？",
+    html:`<p>阿育吠陀認為，自然界與人體都由五種基本元素組成：火、水、土、氣、空。這五種元素不是抽象的符號，而是描述物質的不同性質——火代表熱與轉化，水代表流動與滋潤，土代表穩固與重量，氣代表移動性，空代表空間與輕盈。</p><p>這五大元素兩兩結合，在人體內形成三種能量體質（Dosha）：</p>
+      <div class="dosha-row">
+        <div class="dosha-line"><div class="dosha-dot dot-v"></div><div class="dosha-text">🌬️ <strong>Vata 風型</strong>　氣 + 空　<span class="muted">主導體內流動性——心跳、呼吸、神經傳導</span></div></div>
+        <div class="dosha-line"><div class="dosha-dot dot-p"></div><div class="dosha-text">🔥 <strong>Pitta 火型</strong>　火 + 水　<span class="muted">主導體內轉化——消化、代謝、情緒處理</span></div></div>
+        <div class="dosha-line"><div class="dosha-dot dot-k"></div><div class="dosha-text">🌊 <strong>Kapha 水型</strong>　土 + 水　<span class="muted">主導體內結構——骨密度、耐力、組織穩定</span></div></div>
+      </div>
+      <p>每個人身上都有這三種能量，只是比例不同。當某一種能量過多或過少，就會反映在身體和情緒上。</p>`
+  },
+  {
+    q:"三大體質在身體上各自負責什麼？",
+    html:`<p>三種體質的功能可以用一個簡單的框架來理解：Vata 管「動」、Pitta 管「變」、Kapha 管「撐」。</p>
+      <div class="dosha-row">
+        <div class="dosha-line"><div class="dosha-dot dot-v"></div><div class="dosha-text">🌬️ <strong>Vata 風型</strong>　主導一切移動性，包括神經傳導、心跳節律、呼吸節奏、消化道蠕動。風型能量失衡時，常見焦慮、失眠、消化不規律。</div></div>
+        <div class="dosha-line"><div class="dosha-dot dot-p"></div><div class="dosha-text">🔥 <strong>Pitta 火型</strong>　主導所有轉化過程，包括食物消化、新陳代謝、體溫調節、情緒的快速處理。火型能量失衡時，常見易怒、胃酸過多、皮膚發炎。</div></div>
+        <div class="dosha-line"><div class="dosha-dot dot-k"></div><div class="dosha-text">🌊 <strong>Kapha 水型</strong>　主導結構與穩定，包括骨密度、免疫力、淋巴系統、關節潤滑。水型能量失衡時，常見體重增加、嗜睡、黏液過多。</div></div>
+      </div>
+      <p>了解自己的主要體質後，可以對應調整飲食和練習方式，搭配適合體質的呼吸法（Pranayama）和瑜伽練習，效果更顯著。</p>`
+  },
+  {
+    q:"知道自己的體質之後，應該怎麼用這個結果？",
+    html:`<p>體質測驗結果不是標籤，而是一個起點。知道自己的主要體質後，可以從幾個方向開始調整：</p>
+      <div class="checklist">
+        <div class="check-item"><span class="check-icon">✓</span>先認識主要體質，再參考次體質的調整建議，兩者都有參考價值</div>
+        <div class="check-item"><span class="check-icon">✓</span>從飲食開始調整最容易上手——溫度、口味和份量都可以依體質微調</div>
+        <div class="check-item"><span class="check-icon">✓</span>逐步加入適合自己體質的瑜伽練習和呼吸法（Pranayama）</div>
+        <div class="check-item"><span class="check-icon">✓</span>每個季節重新觀察一次自己的狀態，體質會隨季節和壓力有所浮動</div>
+      </div>
+      <div class="warn-box">
+        <div class="warn-title">⚠️ 需要留意</div>
+        <div class="warn-list">
+          <span>· 這是傳統養生知識，不能取代專業醫療診斷</span>
+          <span>· 有慢性疾病、懷孕或正在服藥，請先諮詢醫生</span>
+          <span>· 體質結果反映的是「當前傾向」，而非固定不變的標籤</span>
+          <span>· 混合體質非常普遍，不需要執著於只有一種</span>
+        </div>
+      </div>`
+  },
+];
+
+function renderQA(){
+  const list = document.getElementById('qaList');
+  if(!list || list.dataset.rendered) return;
+  list.dataset.rendered = "1";
+  qaData.forEach((item, i)=>{
+    const el = document.createElement('div');
+    el.className = 'qa-item';
+    el.innerHTML = `
+      <button class="qa-question" type="button">
+        <span>${item.q}</span>
+        <svg class="qa-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+      </button>
+      <div class="qa-answer">
+        <div class="qa-answer-inner">
+          <div class="qa-answer-body">${item.html}</div>
+        </div>
+      </div>`;
+    el.querySelector('.qa-question').addEventListener('click', ()=>{
+      el.classList.toggle('open');
+    });
+    list.appendChild(el);
+  });
+}
+
+/* ============================================================
+   狀態與邏輯
+   ============================================================ */
+let current = 0;
+let answers = new Array(questions.length).fill(null); // 儲存 dosha string
+
+function startQuiz(){
+  switchScreen('screen-quiz');
+  renderQuestion();
+}
+
+function switchScreen(id){
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  window.scrollTo({top:0, behavior:'smooth'});
+}
+
+function computeScores(){
+  const s = {vata:0, pitta:0, kapha:0};
+  answers.forEach(a=>{ if(a) s[a]++; });
+  return s;
+}
+
+function updateLiveMeters(){
+  const s = computeScores();
+  const answeredCount = answers.filter(a=>a).length;
+  const maxPossible = Math.max(1, answeredCount);
+  ['vata','pitta','kapha'].forEach(k=>{
+    const pct = answeredCount ? Math.round((s[k]/answeredCount)*100) : 0;
+    document.getElementById('live'+cap(k)).style.width = pct+'%';
+    document.getElementById('live'+cap(k)+'N').textContent = s[k];
+  });
+  const doneCount = answers.filter(a=>a!==null).length;
+  document.getElementById('progressCount').textContent = `已完成 ${doneCount} / ${questions.length} 題`;
+  const overallPct = Math.round((doneCount/questions.length)*100);
+  document.getElementById('progressPct').textContent = overallPct+'%';
+  document.getElementById('progressFill').style.width = overallPct+'%';
+}
+
+function cap(s){ return s.charAt(0).toUpperCase()+s.slice(1); }
+
+function renderQuestion(){
+  const q = questions[current];
+  document.getElementById('sectionTag').textContent = q.section;
+  document.getElementById('questionIndex').textContent = `第 ${current+1} 題 / 共 ${questions.length} 題`;
+  document.getElementById('questionText').innerHTML = `${q.text} <span class="q-label-en">${q.label}</span>`;
+
+  const wrap = document.getElementById('optionsWrap');
+  wrap.innerHTML = '';
+  q.options.forEach(opt=>{
+    const btn = document.createElement('button');
+    btn.className = 'option';
+    btn.innerHTML = `<span class="zh">${opt.zh}</span><span class="en">${opt.en}</span>`;
+    btn.onclick = ()=> selectOption(opt.dosha);
+    wrap.appendChild(btn);
+  });
+
+  document.getElementById('backBtn').style.visibility = current===0 ? 'hidden' : 'visible';
+  updateLiveMeters();
+}
+
+function selectOption(dosha){
+  answers[current] = dosha;
+  updateLiveMeters();
+  if(current < questions.length - 1){
+    current++;
+    renderQuestion();
+  } else {
+    showResult();
+  }
+}
+
+function goBack(){
+  if(current>0){
+    current--;
+    renderQuestion();
+  }
+}
+
+function restartQuiz(){
+  current = 0;
+  answers = new Array(questions.length).fill(null);
+  switchScreen('screen-intro');
+}
+
+/* ---------- 結果計算與渲染 ---------- */
+function showResult(){
+  const s = computeScores();
+  const total = questions.length;
+  const pct = {
+    vata: Math.round((s.vata/total)*100),
+    pitta: Math.round((s.pitta/total)*100),
+    kapha: Math.round((s.kapha/total)*100)
+  };
+  const sorted = Object.entries(s).sort((a,b)=>b[1]-a[1]);
+  const [topKey, topVal] = sorted[0];
+  const [secondKey, secondVal] = sorted[1];
+  const isDual = (topVal - secondVal) <= Math.round(total*0.08); // 分數接近則顯示混合型
+
+  const primary = doshaInfo[topKey];
+  const secondary = doshaInfo[secondKey];
+
+  document.getElementById('resultTypeEn').textContent = isDual ? `${primary.en} / ${secondary.en}` : primary.en;
+  document.getElementById('resultTypeZh').textContent = isDual ? `${primary.zh}－${secondary.zh}混合型` : primary.zh;
+  document.getElementById('resultElements').textContent = isDual
+    ? `主導＋次要體質`
+    : `主導體質佔 ${pct[topKey]}%`;
+
+  // score bars
+  const order = ['vata','pitta','kapha'];
+  const barsWrap = document.getElementById('scoreBars');
+  barsWrap.innerHTML = '';
+  order.forEach(k=>{
+    const row = document.createElement('div');
+    row.className = 'score-row';
+    row.innerHTML = `
+      <div class="score-name">${doshaInfo[k].zh.replace('型','')}</div>
+      <div class="score-track"><div class="score-fill ${k}" style="width:0%" data-pct="${pct[k]}"></div></div>
+      <div class="score-pct">${pct[k]}%</div>`;
+    barsWrap.appendChild(row);
+  });
+  setTimeout(()=>{
+    document.querySelectorAll('.score-fill').forEach(el=>{
+      el.style.width = el.getAttribute('data-pct')+'%';
+    });
+  }, 60);
+
+  // result ring (三色比例圓環)
+  renderResultRing(pct);
+
+  // result card content
+  const card = document.getElementById('resultCard');
+  const p = primary;
+  card.innerHTML = `
+    <div class="tag-row">${p.tags.map(t=>`<span class="tag">${t}</span>`).join('')}</div>
+    <h3>特質側寫</h3>
+    <p>${p.trait}</p>
+    <div class="divider"></div>
+    <h3>失衡時的表現</h3>
+    <p>${p.imbalance}</p>
+    <div class="divider"></div>
+    <h3>飲食建議</h3>
+    <ul>${p.diet.map(d=>`<li>${d}</li>`).join('')}</ul>
+    <div class="divider"></div>
+    <h3>適合的瑜伽練習方向</h3>
+    <ul>${p.practice.map(d=>`<li>${d}</li>`).join('')}</ul>
+  `;
+
+  renderQA();
+  switchScreen('screen-result');
+}
+
+/* ---------- 回報高度給外層頁面（供 iframe 嵌入時自動調整高度） ---------- */
+function reportHeight(){
+  if(window.parent && window.parent !== window){
+    window.parent.postMessage({ doshaQuizHeight: document.documentElement.scrollHeight }, '*');
+  }
+}
+window.addEventListener('load', reportHeight);
+window.addEventListener('resize', reportHeight);
+new MutationObserver(reportHeight).observe(document.body, {childList:true, subtree:true, attributes:true});
+setInterval(reportHeight, 600);
+
+function renderResultRing(pct){
+  const svg = document.getElementById('resultRingSvg');
+  // 移除舊的比例弧線（保留底圈）
+  svg.querySelectorAll('.arc').forEach(el=>el.remove());
+  const r = 44, c = 2*Math.PI*r;
+  const colors = {vata:'#9FB8AD', pitta:'#E2572B', kapha:'#8C6A4A'};
+  const order = ['vata','pitta','kapha'];
+  let offsetAcc = 0;
+  order.forEach(k=>{
+    const len = (pct[k]/100)*c;
+    const circle = document.createElementNS('http://www.w3.org/2000/svg','circle');
+    circle.setAttribute('class','arc');
+    circle.setAttribute('cx','50'); circle.setAttribute('cy','50'); circle.setAttribute('r', r);
+    circle.setAttribute('fill','none');
+    circle.setAttribute('stroke', colors[k]);
+    circle.setAttribute('stroke-width','6');
+    circle.setAttribute('stroke-linecap','round');
+    circle.setAttribute('stroke-dasharray', `${len} ${c-len}`);
+    circle.setAttribute('stroke-dashoffset', -offsetAcc);
+    svg.appendChild(circle);
+    offsetAcc += len;
+  });
+}
+</script>
+</body>
+</html>
