@@ -152,14 +152,17 @@
   /* ---------- Result ---------- */
   #screen-result{ padding-top:6px; }
   .result-hero{ text-align:center; margin-bottom:8px; }
-  .result-ring{ width:220px; height:220px; margin:10px auto 16px; position:relative; }
+  .result-ring{ width:120px; height:120px; margin:14px auto 20px; position:relative; }
   .result-ring svg{ width:100%; height:100%; transform:rotate(-90deg); }
-  .result-ring .center-label{
-    position:absolute; inset:0; display:flex; flex-direction:column; align-items:center; justify-content:center;
+  .result-type-en{
+    font-size:11px; letter-spacing:.15em; color:#CFC9DE; text-transform:uppercase;
+    margin-bottom:8px; padding:0 12px; line-height:1.6; word-break:break-word;
   }
-  .result-type-en{ font-size:11px; letter-spacing:.2em; color:#CFC9DE; text-transform:uppercase; margin-bottom:4px;}
-  .result-type-zh{ font-family:'Noto Serif TC',serif; font-size:28px; font-weight:700; color:var(--paper); }
-  .result-elements{ font-size:13px; color:#CFC9DE; margin-top:4px; }
+  .result-type-zh{
+    font-family:'Noto Serif TC',serif; font-size:26px; font-weight:700; color:var(--paper);
+    padding:0 10px; line-height:1.35; word-break:keep-all; overflow-wrap:break-word;
+  }
+  .result-elements{ font-size:13px; color:#CFC9DE; margin-top:8px; }
 
   .score-bars{ margin:26px 0 10px; display:flex; flex-direction:column; gap:14px; }
   .score-row{ display:flex; align-items:center; gap:12px; }
@@ -267,7 +270,9 @@
   @media (max-width:480px){
     h1.title{ font-size:24px; }
     .question-text{ font-size:18px; }
-    .element-ring, .result-ring{ width:150px; height:150px; }
+    .element-ring{ width:150px; height:150px; }
+    .result-ring{ width:96px; height:96px; margin:12px auto 16px; }
+    .result-type-zh{ font-size:21px; }
   }
 </style>
 </head>
@@ -357,12 +362,10 @@
         <svg viewBox="0 0 100 100" id="resultRingSvg">
           <circle cx="50" cy="50" r="44" fill="none" stroke="rgba(255,255,255,0.08)" stroke-width="6"/>
         </svg>
-        <div class="center-label">
-          <div class="result-type-en" id="resultTypeEn">YOUR DOSHA</div>
-          <div class="result-type-zh" id="resultTypeZh">—</div>
-          <div class="result-elements" id="resultElements"></div>
-        </div>
       </div>
+      <div class="result-type-en" id="resultTypeEn">YOUR DOSHA</div>
+      <div class="result-type-zh" id="resultTypeZh">—</div>
+      <div class="result-elements" id="resultElements"></div>
     </div>
 
     <div class="score-bars" id="scoreBars"></div>
