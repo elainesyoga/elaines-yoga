@@ -2135,11 +2135,348 @@ footer {
 <div class="page-wrap">
   <div style="padding-left:24px; padding-right:24px; padding-top:32px; padding-bottom:60px;">
     <div class="journal-section-title">知識花園</div>
-    <div style="text-align:center; padding:60px 0; color:var(--gray-warm); font-size:0.85rem; letter-spacing:0.15em; line-height:2.2;">
-      <div style="font-size:1.8rem; margin-bottom:16px; opacity:0.4;">🌿</div>
-      單方精油介紹 · QA 問答 · 瑜珈經<br>
-      <span style="font-size:0.72rem; opacity:0.6;">Coming soon · 陸續建置中</span>
+
+  <div class="qa-scope">
+  <style>
+  .qa-scope{
+    --cream:#F7F4EE;
+    --card:#FFFFFF;
+    --ink:#2B2820;
+    --ink-soft:#6B6558;
+    --line:#E8E2D6;
+    --terracotta:#C96A43;
+    --terracotta-soft:#F3DED2;
+    --sage:#5C7A5E;
+    --sage-soft:#DCE6DC;
+    --slate:#5B6B7A;
+    --slate-soft:#DDE4EA;
+    --plum:#7D5772;
+    --plum-soft:#E9DDE6;
+    --serif: "Noto Serif TC", "Songti TC", serif;
+    --sans: "Noto Sans TC", "PingFang TC", "Microsoft JhengHei", sans-serif;
+    display:block;
+    background:var(--cream);
+    color:var(--ink);
+    font-family:var(--sans);
+    padding:32px 16px 64px;
+    border-radius:24px;
+  }
+  .qa-scope *{box-sizing:border-box;}
+  .qa-wrap{max-width:720px;margin:0 auto;}
+
+  .qa-header{margin-bottom:24px;}
+  .qa-eyebrow{
+    font-size:12px;
+    letter-spacing:0.14em;
+    color:var(--terracotta);
+    font-weight:600;
+    margin-bottom:6px;
+  }
+  .qa-h1{
+    font-family:var(--serif);
+    font-size:28px;
+    font-weight:600;
+    margin:0 0 4px;
+    letter-spacing:0.01em;
+    color:var(--ink);
+  }
+  .qa-count{
+    font-size:13px;
+    color:var(--ink-soft);
+  }
+  .qa-count strong{color:var(--ink);font-weight:600;}
+
+  .qa-controls{
+    position:sticky;
+    top:12px;
+    z-index:10;
+    background:var(--cream);
+    padding-bottom:12px;
+  }
+  .qa-search-box{
+    position:relative;
+    margin-bottom:12px;
+  }
+  .qa-search-box input{
+    width:100%;
+    padding:12px 16px 12px 40px;
+    border-radius:12px;
+    border:1px solid var(--line);
+    background:var(--card);
+    font-size:15px;
+    font-family:var(--sans);
+    color:var(--ink);
+    outline:none;
+    transition:border-color .15s ease, box-shadow .15s ease;
+  }
+  .qa-search-box input:focus{
+    border-color:var(--terracotta);
+    box-shadow:0 0 0 3px var(--terracotta-soft);
+  }
+  .qa-search-box svg{
+    position:absolute;
+    left:14px;
+    top:50%;
+    transform:translateY(-50%);
+    width:16px;
+    height:16px;
+    stroke:var(--ink-soft);
+  }
+
+  .qa-tags{
+    display:flex;
+    gap:8px;
+    flex-wrap:wrap;
+  }
+  .qa-tag{
+    padding:7px 14px;
+    border-radius:999px;
+    border:1px solid var(--line);
+    background:var(--card);
+    font-size:13px;
+    font-weight:500;
+    color:var(--ink-soft);
+    cursor:pointer;
+    user-select:none;
+    transition:all .15s ease;
+    white-space:nowrap;
+  }
+  .qa-tag:hover{border-color:var(--terracotta);color:var(--ink);}
+  .qa-tag.qa-active{
+    background:var(--ink);
+    border-color:var(--ink);
+    color:var(--cream);
+  }
+
+  .qa-list{
+    display:flex;
+    flex-direction:column;
+    gap:10px;
+    margin-top:16px;
+  }
+  .qa-item{
+    background:var(--card);
+    border:1px solid var(--line);
+    border-radius:14px;
+    overflow:hidden;
+    transition:border-color .15s ease;
+  }
+  .qa-item.qa-open{border-color:var(--terracotta);}
+  .qa-q-row{
+    display:flex;
+    align-items:flex-start;
+    gap:12px;
+    padding:16px 18px;
+    cursor:pointer;
+  }
+  .qa-q-text{
+    flex:1;
+    font-size:15px;
+    font-weight:500;
+    line-height:1.5;
+  }
+  .qa-badge{
+    flex-shrink:0;
+    font-size:11px;
+    font-weight:600;
+    padding:4px 10px;
+    border-radius:999px;
+    white-space:nowrap;
+    margin-top:1px;
+  }
+  .qa-badge.qa-aroma{background:var(--terracotta-soft);color:var(--terracotta);}
+  .qa-badge.qa-yoga{background:var(--sage-soft);color:var(--sage);}
+  .qa-badge.qa-anat{background:var(--slate-soft);color:var(--slate);}
+  .qa-badge.qa-meridian{background:var(--plum-soft);color:var(--plum);}
+
+  .qa-chevron{
+    flex-shrink:0;
+    width:18px;
+    height:18px;
+    stroke:var(--ink-soft);
+    transition:transform .2s ease;
+    margin-top:2px;
+  }
+  .qa-item.qa-open .qa-chevron{transform:rotate(180deg);}
+
+  .qa-a-wrap{
+    max-height:0;
+    overflow:hidden;
+    transition:max-height .25s ease;
+  }
+  .qa-item.qa-open .qa-a-wrap{max-height:600px;}
+  .qa-a-text{
+    padding:0 18px 18px 18px;
+    font-size:14px;
+    line-height:1.75;
+    color:var(--ink-soft);
+    border-top:1px solid var(--line);
+    margin-top:-1px;
+    padding-top:12px;
+  }
+  .qa-a-text strong{color:var(--ink);font-weight:600;}
+  .qa-a-text .qa-src{
+    display:block;
+    margin-top:10px;
+    font-size:12px;
+    color:var(--terracotta);
+  }
+
+  .qa-empty{
+    text-align:center;
+    padding:48px 16px;
+    color:var(--ink-soft);
+    font-size:14px;
+  }
+
+  @media (max-width:480px){
+    .qa-h1{font-size:24px;}
+    .qa-tags{gap:6px;}
+    .qa-tag{padding:6px 12px;font-size:12px;}
+  }
+  </style>
+    <div class="qa-wrap">
+      <div class="qa-header">
+        <div class="qa-h1">芳療瑜伽常見QA</div>
+        <div class="qa-count">共 <strong id="qaTotalCount">0</strong> 題，目前顯示 <strong id="qaShownCount">0</strong> 題</div>
+      </div>
+
+      <div class="qa-controls">
+        <div class="qa-search-box">
+          <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+          <input type="text" id="qaSearchInput" placeholder="搜尋題目或關鍵字，例如：薰衣草、根鎖、筋膜線…">
+        </div>
+        <div class="qa-tags" id="qaTagRow">
+          <div class="qa-tag qa-active" data-cat="all">全部</div>
+          <div class="qa-tag" data-cat="aroma">芳療</div>
+          <div class="qa-tag" data-cat="yoga">瑜伽</div>
+          <div class="qa-tag" data-cat="anat">解剖</div>
+          <div class="qa-tag" data-cat="meridian">經絡</div>
+        </div>
+      </div>
+
+      <div class="qa-list" id="qaList"></div>
+      <div class="qa-empty" id="qaEmptyState" style="display:none;">沒有符合條件的題目，換個關鍵字試試。</div>
     </div>
+  </div>
+
+  <script>
+  (function(){
+    var QA_CAT_LABEL = { aroma: '芳療', yoga: '瑜伽', anat: '解剖', meridian: '經絡' };
+
+    var qaQuestions = [
+  { order:1, cat:'aroma', q:'頭痛的時候，適合用哪些精油？怎麼用？', a:'常用的精油有<strong>洋甘菊（德國或羅馬）、薰衣草、薄荷、花梨木</strong>。使用方式包括沐浴、吸入、按摩或擴香，其中薄荷與薰衣草的清涼與鎮靜感是最直接的組合。', src:'精油芳療｜症狀 vs. 精油快速查詢指南' },
+  { order:2, cat:'aroma', q:'失眠時可以用哪些精油幫助入睡？', a:'建議選擇<strong>洋甘菊、薰衣草、甜橙、依蘭依蘭</strong>，透過沐浴、吸入或按摩使用。這幾支油都偏向安神鎮靜，適合睡前擴香或滴在枕邊。', src:'精油芳療｜症狀 vs. 精油快速查詢指南' },
+  { order:3, cat:'aroma', q:'焦慮情緒適合用什麼精油調理？', a:'可以選用<strong>羅勒、佛手柑、雪松、快樂鼠尾草、乳香、茉莉、橙花、洋甘菊、百里香</strong>，透過沐浴、吸入或按摩使用，佛手柑與橙花特別適合處理浮躁不安的情緒。', src:'精油芳療｜症狀 vs. 精油快速查詢指南' },
+  { order:4, cat:'aroma', q:'血瘀體質有哪些特徵？適合用什麼精油調理？', a:'常見特徵包括面色偏暗（如上了一層墨）、舌下靜脈瘀紫、容易不明原因瘀青、眼睛紅血絲多、性情急躁、對寒冷不適應，且常有「不通則痛」的痛證。適合以<strong>薰衣草、檀香、檜木、乳香、快樂鼠尾草</strong>行氣血，搭配<strong>永久花、莪朮、黑胡椒、迷迭香、檸檬、沒藥</strong>等活血化瘀的精油。', src:'中醫芳療｜血瘀體質特徵與精油應用原則' },
+  { order:5, cat:'aroma', q:'中醫芳療「化瘀散」配方的設計邏輯是什麼？', a:'採用「<strong>軟、疏、引</strong>」三步驟：先用<strong>莪朮</strong>軟化，打開腹部或深層緊繃處的鬱結；再以<strong>永久花</strong>疏散，清除積聚感與阻滯情緒；最後用<strong>黃葵籽</strong>引動，喚醒氣血節奏與輕盈感。適用於小腹、腹股溝、八髎穴，早晚塗抹。', src:'中醫芳療｜血瘀體質特徵與精油應用原則' },
+  { order:6, cat:'aroma', q:'感冒初期適合用哪些精油？', a:'可選用<strong>羅勒、安息香、黑胡椒、樟腦迷迭香、肉桂、尤加利、薑、檸檬、綠花白千層、薄荷、松樹、茶樹、百里香</strong>，透過沐浴、冷熱敷或按摩使用，多屬溫熱驅寒、抗菌類的精油。', src:'精油芳療｜症狀 vs. 精油快速查詢指南' },
+  { order:7, cat:'aroma', q:'浮腫水腫適合用哪些精油？', a:'建議使用<strong>黑胡椒、絲柏、葡萄柚、杜松子、檸檬、苦橙、甜橙</strong>，透過沐浴、冷熱敷或按摩使用，多屬利水、促進循環的精油。', src:'精油芳療｜症狀 vs. 精油快速查詢指南' },
+  { order:8, cat:'yoga', q:'什麼是根鎖 Mula Bandha？解剖學上對應身體哪個部位？', a:'根鎖是三大收束法（Bandha）之一，梵文 mula 意為「根」。解剖上對應<strong>骨盆底肌群（提肛肌，含尾骨肌、髂尾肌、恥骨尾肌）</strong>的收縮，男性焦點在會陰體，女性在子宮頸基部附近。傳統教法多描述為「收縮肛門」，現代解剖學則多從恥尾肌切入。', src:'瑜伽哲學｜Mula Bandha 根鎖' },
+  { order:9, cat:'yoga', q:'練習根鎖的五個步驟是什麼？', a:'<strong>Step1</strong> 盤坐閉眼，自由呼吸下收縮整個會陰 25 次，建立收縮意識；<strong>Step2</strong> 收縮並保持，依序感受肛門區、會陰體、尿生殖區；<strong>Step3</strong> 配合呼吸（吸氣收縮、吐氣釋放）重複 25 次；<strong>Step4</strong> 聚焦會陰中央，減少肛門與尿生殖區參與，做出精準根鎖；<strong>Step5</strong> 能維持收縮且不影響呼吸後，整合進調息與冥想練習。', src:'瑜伽哲學｜Mula Bandha 根鎖' },
+  { order:10, cat:'yoga', q:'根鎖適合搭配哪些體位法一起練習？', a:'常見搭配包括：<strong>花環式</strong>（最直接打開骨盆底）、<strong>山式</strong>（紮根踩地啟動盆底）、<strong>戰士式系列</strong>（深踩穩定骨盆）、<strong>橋式</strong>（提升骨盆區域能量）、<strong>貓牛式</strong>（脊椎波動感知盆底動態）、<strong>頭碰膝前曲</strong>（延伸骨盆底後側）。', src:'瑜伽哲學｜Mula Bandha 根鎖' },
+  { order:11, cat:'yoga', q:'除了收縮肛門之外，還有哪些練習可以幫助感知根鎖？', a:'三個輔助感知練習：<strong>馬印（Ashwini Mudra）</strong>收縮肛門括約肌，像大便中途暫停的感覺；<strong>金剛力手印（Vajroli Mudra）</strong>收縮尿道，像暫停尿流；以及一般熟知的<strong>凱格爾運動</strong>，概念相通，都是骨盆底肌的感知訓練。', src:'瑜伽哲學｜Mula Bandha 根鎖' },
+  { order:12, cat:'yoga', q:'《瑜伽經》裡帕坦加利如何定義「瑜伽」？', a:'帕坦加利在《瑜伽經》中將瑜伽定義為「<strong>平靜心靈意識的波動</strong>」，也就是止息心意識的種種變化與起伏，而非單純的體位法練習。', src:'金句｜瑜伽就是平靜心靈意識的波動' },
+  { order:13, cat:'yoga', q:'為什麼說「瑜伽不是改善體位法，而是透過體位法改善生活」？', a:'這是 Aadil Palkhivala 的教學金句，核心觀點是體位法練習不是目的本身，而是<strong>工具</strong>——透過在墊子上練習專注、覺察與呼吸，把這些能力帶回日常生活中，讓生活本身變得更穩定、更清明。', src:'金句｜瑜伽不是改善體位法，而是透過體位法改善生活' },
+  { order:14, cat:'yoga', q:'半月式（Ardha Chandrasana）的神話起源是什麼？', a:'相傳與<strong>象頭神伽內什（Ganesha）</strong>有關：在伽內什生日那晚，他吃下信徒供奉、象徵著痛苦與障礙的大量甜食，之後騎著他的座騎老鼠 Mooshika 出門，途中意外跌倒，這個故事後來與半月式的體位形象產生連結，成為體式背後的神話敘事。', src:'體式故事｜半月式與伽內什的神話起源' },
+  { order:15, cat:'anat', q:'解剖列車的七條筋膜線分別是什麼？', a:'Thomas Myers 提出的七條解剖線為：<strong>淺背線、淺前線、側線、旋線、臂線、功能線、深前線</strong>。每條線由不同解剖位置串聯而成，各點如同車站，是張力傳導與轉折點，彼此獨立運作又互相影響。', src:'解剖列車七條筋膜線與實證研究' },
+  { order:16, cat:'anat', q:'目前實證研究對解剖列車七條筋膜線的支持程度如何？', a:'根據 2016 年 Jan Wilke 收錄 62 篇大體解剖研究的整理：<strong>高度證據支持</strong>淺背線、背功能線、前功能線；<strong>中到高度證據支持</strong>上螺旋線、下側線；<strong>目前研究無法證實</strong>淺前線。實證結果是中性的，現在無法證實不代表未來不存在。', src:'解剖列車七條筋膜線與實證研究' },
+  { order:17, cat:'anat', q:'上肢的筋膜線研究有什麼新發現？', a:'2019 年的上肢研究發現，上肢確實存在類似的筋膜鏈，但並非 Thomas Myers 原本提出的臂線，而是另外三條：<strong>腹手臂線、背手臂線、外手臂線</strong>（外手臂線與淺背臂線概念類似）。', src:'解剖列車七條筋膜線與實證研究' },
+  { order:18, cat:'anat', q:'胸式呼吸與腹式呼吸在肌肉使用上有什麼不同？', a:'<strong>胸式呼吸</strong>主要收縮胸肌和肋間肌，吸吐氣量較少、呼吸較淺；<strong>腹式呼吸</strong>主要收縮橫膈膜和腹肌，吸吐氣量較多、呼吸較深。吸氣時胸腔變大、肋骨上舉、橫膈下降；呼氣則相反，且正常放鬆的呼氣是被動發生的，不需動用輔助呼吸肌。', src:'解剖學｜呼吸機制、胸廓變化與胸腹式呼吸比較' },
+  { order:19, cat:'anat', q:'控制呼吸的肌群可以分成哪幾類？', a:'可分三類：<strong>主要吸氣肌</strong>是外肋間肌與橫膈膜；<strong>吸氣輔助肌</strong>是胸鎖乳突肌、斜角肌、胸小肌、前鋸肌；<strong>呼氣輔助肌</strong>是內肋間肌、腹外斜肌、腹內斜肌、腹直肌、腹橫肌。輔助肌只有在用力呼吸（如喘氣、深吐）時才會動用。', src:'解剖學｜呼吸機制、胸廓變化與胸腹式呼吸比較' },
+  { order:20, cat:'anat', q:'脈輪系統裡，心輪扮演什麼角色？', a:'心輪是<strong>前三個下層脈輪與後三個上層脈輪之間的橋樑</strong>，象徵從物質、生存導向的能量，過渡到愛、連結與靈性導向的能量，是整個脈輪系統承上啟下的關鍵位置。', src:'能量體｜第四脈輪心輪（Heart Chakra）書籍版完整詮解' },
+
+  { order:21, cat:'meridian', q:'下肢的經絡有哪些？', a:'下肢共有六條經絡：<strong>足陽明胃經、足太陰脾經、足少陰腎經、足太陽膀胱經、足厥陰肝經、足少陽膽經</strong>，剛好對應胃、脾、腎、膀胱、肝、膽六個臟腑。', src:'中醫理論｜十二經絡分布總覽與對應症狀速查表' },
+  { order:22, cat:'meridian', q:'上肢的六條經絡分別對應哪些臟腑與常見失衡？', a:'<strong>手太陰肺經</strong>（肺）主呼吸與皮膚防禦，失衡易感冒、氣短、皮膚乾燥；<strong>手陽明大腸經</strong>（大腸）主排便代謝，失衡易便秘、腹脹；<strong>手少陰心經</strong>（心）主睡眠與精神狀態，失衡易失眠多夢、心悸；<strong>手太陽小腸經</strong>（小腸）主肩頸與吸收分辨，失衡易後頸僵硬、耳鳴；<strong>手厥陰心包經</strong>（心包）主壓力調節，失衡易胸悶焦慮；<strong>手少陽三焦經</strong>（三焦）主全身氣機水液循環，失衡易水腫、代謝變慢。', src:'中醫理論｜十二經絡分布總覽與對應症狀速查表' },
+  { order:23, cat:'meridian', q:'下肢的六條經絡分別對應哪些臟腑與常見失衡？', a:'<strong>足陽明胃經</strong>（胃）主消化與臉部氣色，失衡易胃脹、長痘；<strong>足太陰脾經</strong>（脾）主水濕代謝與體態穩定，失衡易水腫、疲倦；<strong>足少陰腎經</strong>（腎）主元氣與體力儲備，失衡易手腳冰冷、腰痠；<strong>足太陽膀胱經</strong>（膀胱）主背部筋膜與全身放鬆，失衡易背部僵硬、慢性疲勞；<strong>足厥陰肝經</strong>（肝）主情緒與氣機疏通，失衡易胸悶脹氣、易怒；<strong>足少陽膽經</strong>（膽）主側邊筋絡與決斷力，失衡易偏頭痛、猶豫焦慮。', src:'中醫理論｜十二經絡分布總覽與對應症狀速查表' },
+  { order:24, cat:'meridian', q:'學生常見的症狀，可以對照到哪些經絡失調？', a:'常見對照：<strong>偏頭痛、側邊緊繃</strong>多與膽經或肝經氣滯有關；<strong>壓力一大就脹氣、胸口悶</strong>多與肝經或心包經有關；<strong>下半身水腫、身體沉重</strong>多與脾經、三焦經運行不順有關；<strong>背部僵硬、肩頸痠痛</strong>多與膀胱經、小腸經緊繃有關；<strong>常便秘或排便不乾淨</strong>多與大腸經、胃經失調有關；<strong>睡不好、易煩躁或口破</strong>多與心經或胃經偏熱有關。', src:'中醫理論｜十二經絡分布總覽與對應症狀速查表' },
+  { order:25, cat:'meridian', q:'一天當中氣血流注的時辰重點是什麼？', a:'依中醫子午流注觀點：<strong>23:00–03:00</strong> 是肝膽經運行的時段，應熟睡以幫助情緒代謝與氣血修復；<strong>07:00–09:00</strong> 胃經旺盛，適合進食早餐啟動一天能量；<strong>15:00–17:00</strong> 膀胱經活躍，建議適度活動伸展，避免久坐。', src:'中醫理論｜十二經絡日常保養：作息時辰、穴位速查與飲食原則' },
+  { order:26, cat:'meridian', q:'日常保養有哪些常用穴位？各自對應什麼經絡與功效？', a:'<strong>足三里</strong>（胃經）補氣養胃、提升體力；<strong>太衝</strong>（肝經）疏肝解鬱、改善脹氣與頭痛；<strong>三陰交</strong>（脾肝腎三經交會穴）調和三經、改善水腫與睡眠不穩；<strong>內關</strong>（心包經）安神緩壓、舒緩胸悶焦慮；<strong>委中</strong>（膀胱經）放鬆背部與下肢緊繃。建議每日選 1–2 處按壓或熱敷 5–10 分鐘，並搭配深呼吸。', src:'中醫理論｜十二經絡日常保養：作息時辰、穴位速查與飲食原則' },
+  { order:27, cat:'meridian', q:'淺背線（筋膜）跟中醫的膀胱經有什麼關聯？', a:'膀胱經從腳跟沿著背部一路通達頭頂，走向與筋膜解剖列車中的<strong>淺背線</strong>高度相似，兩者都負責身體的伸展與直立支撐。因此在中醫推拿中，調理膀胱經往往能同時緩解淺背線的緊繃，這也是筋膜與經絡系統相互呼應的一個例子。', src:'淺背線的功能與中醫膀胱經的連結' },
+
+  { order:28, cat:'aroma', q:'晚上適合用什麼單方精油？', a:'最經典的選擇是<strong>真正薰衣草</strong>。它含有的沉香醇能放鬆鎮靜隨意肌，並透過阻斷麩胺酸的刺激作用，提高大腦中鎮靜神經傳導物質 GABA 的作用，幫助舒緩腦部活動，對焦慮、失眠、壓力都有安撫效果，是課程中對孕婦也友善的單方精油之一（低濃度）。', src:'精油芳療｜真正薰衣草完整功效與用途指南' },
+  { order:29, cat:'aroma', q:'真正薰衣草為什麼叫「真正」薰衣草？', a:'真正薰衣草指的是薰衣草屬中的原生單一品種 <strong>Lavandula angustifolia（又稱 L. officinalis）</strong>，特色是葉子較細、花穗較短、產量低、含酯類為主，香味輕盈細膩，生長於法國普羅旺斯海拔 1300–1800 公尺的乾燥高地，這樣的產區與品種純度是「真正」二字的由來。它與配方卡中常見的<strong>穗花薰衣草</strong>是不同品種，兩者功效與香氣特性也不同，因此芳療上會特別區分「真正」薰衣草。', src:'精油芳療｜真正薰衣草完整功效與用途指南' },
+  { order:30, cat:'yoga', q:'象神伽內什的故事是什麼？為什麼他的坐騎是老鼠？', a:'一個常見版本是：濕婆與帕爾瓦蒂拿出一顆神聖果實，要兩個兒子<strong>迦提卡亞</strong>與<strong>伽內什</strong>比賽環遊宇宙三圈，誰先回來就能得到果實。迦提卡亞立刻跳上坐騎孔雀飛速出發；伽內什則看了看自己的坐騎——小老鼠 Mooshika，沉思後只是繞著父母走了三圈，說：「你們就是我的整個宇宙，繞著你們走三圈，就等於環遊宇宙三圈。」濕婆與帕爾瓦蒂深受感動，把果實給了伽內什。這個故事常被用來討論「聰明不在快，而在深度」——行動與速度（迦提卡亞）對比智慧與深度理解（伽內什）。', src:'瑜伽哲學｜伽內什與迦提卡亞環遊宇宙的完整故事' },
+  { order:31, cat:'yoga', q:'為什麼瑜伽課後老師會帶大家唱誦 OM？', a:'OM 作為開場引導，由 A（清醒）、U（作夢）、M（深睡）、無音的餘音（超越）四個音素構成，象徵貫穿萬物語言與意義的宇宙之聲，也是連結微小自我與宏大宇宙之梵的橋樑。收尾的 OM 一般用來把整堂課累積的專注與呼吸「收攝」起來，透過集體共同發聲，將個人練習收回整體，同時作為感恩與圓滿的儀式性結尾，呼應開場唱誦時建立的連結感。', src:'瑜伽哲學｜OM（嗆）的多層次意義（後半段為一般知識補充）' },
+  { order:32, cat:'yoga', q:'瑜伽的八支（Ashtanga）是哪八支？', a:'帕坦加利《瑜伽經》提出的八支依序為：<strong>1. Yama 持戒、2. Niyama 精進、3. Asana 體位法、4. Pranayama 呼吸控制法、5. Pratyahara 制感、6. Dharana 專注、7. Dhyana 禪定、8. Samadhi 三摩地</strong>。整體邏輯是由外而內：先約束對外的行為與身心，再逐步收攝到內在意識，最終達到合一的狀態。持戒與精進是整個系統的起點，體位法只是八支中的一環，而非瑜伽練習的全部。', src:'瑜伽哲學｜《瑜伽經》與內在多元自我的整合（後半段為一般知識補充）' },
+
+  { order:34, cat:'aroma', q:'檀香精油有哪些主要功效與代表配方？', a:'常見的十大功效包括：神經保護、調理慢性發炎、抗氧化、肌膚抗衰老、抗菌抗真菌、緩解壓力焦慮、改善睡眠、改善代謝症候群、傷口癒合、癌後術後陪伴。代表配方如<strong>檀香＋真正薰衣草</strong>（緩解壓力焦慮：薰衣草穩住副交感、檀香安撫交感，兩邊一起回到平衡）、<strong>檀香＋乳香</strong>（抗發炎、抗氧化、傷口癒合）。', src:'檀香精油｜十大功效與配方卡' },
+  { order:35, cat:'aroma', q:'感冒的風寒型與風熱型怎麼分辨？精油配方怎麼調整？', a:'<strong>風寒型</strong>：鼻水清淡、痰稀白、咳嗽、口不乾、不易流汗，適合薑、桂枝、迷迭香或辛夷等溫熱精油，塗抹肩頸並加強按摩風池穴袪風寒。<strong>風熱型</strong>：鼻涕黃濁、黃黏痰、喉嚨腫痛、口渴、易發熱，適合薄荷、尤加利或茶樹等清涼精油，塗抹胸腔前後及喉嚨，加強按摩大椎與曲池穴舒緩風熱。', src:'精油配方｜感冒系列——風寒與風熱不同配方與區分說明' },
+  { order:36, cat:'aroma', q:'鼻子過敏的三種體質怎麼分？精油配方的邏輯是什麼？', a:'中醫認為鼻過敏是「寒氣侵入肺經絡」，依寒氣深淺分三型：<strong>肺經型</strong>（寒氣僅在表層，症狀較輕）用辛夷、薑或黑胡椒、乳香活絡肺經；<strong>肺脾虛型</strong>（寒氣達中焦脾胃、鼻腔積水黏液）加入花梨木或沒藥補中焦之氣、廣藿香化濕；<strong>腎虛型</strong>（寒氣深入腎經、命門火弱）用絲柏補下焦、極少量肉桂皮（僅 1 滴）暖命門火，治則是「金水相生」，補腎氣以強化肺的能量。', src:'精油配方｜鼻子過敏三種體質——肺經型、肺脾虛型、腎虛型' },
+  { order:37, cat:'aroma', q:'便秘可以用哪些精油配方？中醫芳療怎麼區分虛實？', a:'中醫芳療把便秘分兩類：<strong>陰虛或血虛型</strong>用「滋陰潤腸」思路，配方如羅馬洋甘菊、花梨木或沒藥補氣、當歸或乳香促血循、依蘭或天竺葵滋陰清熱，順著結腸方向按摩腹部並加強上巨虛穴；<strong>熱結型</strong>（煩躁怕熱、喜喝冷水、大便乾硬）則用清熱思路，如澳洲尤加利或綠花白千層、葡萄柚、薄荷、德國洋甘菊，同時按摩腹部與肺經，利用「肺與大腸相表裡」的概念加強清熱效果。', src:'精油配方｜便秘系列——滋陰潤腸配方與熱結便秘配方' },
+  { order:38, cat:'aroma', q:'情緒會在身體上留下什麼訊號？', a:'情緒不只是心理感受，長期忽視容易演變成身體症狀：<strong>肩頸緊繃</strong>多與長期壓力有關；<strong>胃部悶脹</strong>常是焦慮訊號；<strong>胸口沉重</strong>多與悲傷、憂鬱相關；<strong>心悸</strong>是恐懼或不安的自然反應；<strong>睡眠困難或早醒</strong>代表情緒未被釋放；<strong>頭部脹痛</strong>常是壓力長期累積的結果。', src:'心理情緒｜走進情緒地圖——情緒本質、身體訊號與芳療平衡配方' },
+  { order:39, cat:'aroma', q:'精油可以怎麼協助情緒調節與平衡？', a:'精油透過嗅覺神經通路影響腦部邊緣系統與下視丘，調節自律神經與情緒反應，關鍵化學分子如酯類、單萜醇、倍半萜烯能溫和支持身心回到穩定。舉例：<strong>安撫焦躁助眠</strong>——羅馬洋甘菊＋岩蘭草＋快樂鼠尾草；<strong>情緒滋養與自我接納</strong>——橙花＋玫瑰＋雪松；<strong>清理內在雜訊</strong>——乳香＋芳樟＋檸檬；<strong>釋放壓抑</strong>——苦橙葉＋天竺葵＋檀香。建議依當下情緒狀態選擇香調，並適度輪替，避免嗅覺疲乏與心理依賴。', src:'心理情緒｜走進情緒地圖——情緒本質、身體訊號與芳療平衡配方' },
+
+  { order:45, cat:'anat', q:'自律神經系統的交感與副交感神經有什麼差別？', a:'<strong>交感神經</strong>對應「戰鬥或逃跑」，心跳加快、支氣管擴張、瞳孔放大、消化受抑制；<strong>副交感神經</strong>對應「休息與消化」，心跳減慢、支氣管收縮、瞳孔收縮、消化被促進。瑜伽練習中的前彎、呼吸練習與大休息，都能啟動副交感神經，幫助身體從戰鬥模式回到修復模式。', src:'解剖學｜神經細胞構造與自律神經系統' },
+  { order:46, cat:'anat', q:'神經元的基本構造與三種類型是什麼？', a:'神經元由<strong>細胞本體、樹突、軸突、末梢</strong>四大構造組成。三種常見類型：<strong>感覺神經元</strong>（傳入）負責接收外界刺激傳入中樞；<strong>運動神經元</strong>（傳出）從中樞傳出指令到肌肉；<strong>聯絡神經元</strong>則連接感覺與運動神經元，是中樞內部的橋樑。', src:'解剖學｜神經細胞構造與自律神經系統' },
+  { order:47, cat:'anat', q:'為什麼好的動作能讓大腦感覺安全？', a:'神經系統無時無刻都在評估身體內外是否安全，姿勢、呼吸模式、動作品質都是它判斷的依據。當動作流暢、呼吸自由、肌肉沒有多餘緊繃，神經系統收到的訊號是「一切正常」；反之持續緊縮、淺呼吸、動作受限，會讓身體停在低度警戒狀態。流暢完整的呼吸與動作，能主動打斷這個「身體緊繃－大腦警戒」互相強化的迴圈，向神經系統傳遞「現在安全了」的訊號。', src:'心理情緒｜為什麼好的動作能讓大腦安心？' },
+  { order:48, cat:'anat', q:'迷走神經跟身心放鬆有什麼關係？', a:'迷走神經是副交感神經系統中最重要的一條，從腦幹延伸到心臟、肺臟、腸道，負責讓身體從警戒狀態回到休息修復狀態。它的活化高度依賴<strong>吐氣</strong>：延長吐氣、讓呼氣比吸氣慢而深，能提升迷走神經張力，使心跳減緩、肌肉張力下降，大腦的警戒迴路逐漸安靜下來——這也是許多動作練習會特別強調吐氣延長的原因。', src:'心理情緒｜為什麼好的動作能讓大腦安心？' },
+  { order:49, cat:'anat', q:'筋膜裡的感覺神經和本體感覺有什麼關係？', a:'筋膜裡含有大量感覺神經受器，數量約是肌肉的六倍，負責偵測身體的位置、張力、動作方向與速度，即時回傳給大腦形成本體感覺。當本體感覺清晰，大腦知道身體在哪裡、在做什麼，就不需要維持高度警戒；當本體感覺模糊（例如長期久坐），大腦會以隱性方式持續緊張。動作練習提高本體感覺解析度的過程，本質上就是在幫大腦「安心」。', src:'心理情緒｜為什麼好的動作能讓大腦安心？' },
+  { order:50, cat:'anat', q:'為什麼壓力大的人常常呼吸很淺？', a:'大腦感知威脅時交感神經啟動，呼吸會自動變快變淺，把氧氣快速送到肌肉準備戰或逃。現代生活的壓力（截止日期、財務焦慮、訊息轟炸）不需要你真的跑走，卻持續讓交感神經維持輕度激活，久而久之呼吸就固定停留在「快、淺、只到胸腔上部」的模式，即使當下並沒有真實危險。長期腹部肌肉緊繃、駝背姿勢、淺呼吸習慣，也會讓橫膈膜的活動空間與神經控制變得遲鈍。', src:'解剖學｜為什麼壓力大的人都不會呼吸？' },
+  { order:51, cat:'anat', q:'淺呼吸對身體會造成哪些影響？', a:'四個主要影響：<strong>神經系統無法切換</strong>——迷走神經得不到足夠刺激，交感神經持續主導；<strong>淋巴循環停滯</strong>——橫膈膜起伏是淋巴系統主要推動力，淺呼吸讓代謝廢物在組織裡累積；<strong>核心無法真正工作</strong>——深層核心啟動需要腹腔內壓力變化，淺呼吸讓這個訊號消失；<strong>思維變得不清晰</strong>——氧氣交換效率降低，大腦在輕度缺氧下運作，專注力與情緒調節都會下降。可用「一手放胸口、一手放腹部」自我測試，觀察呼吸是否真正進到腹腔。', src:'解剖學｜為什麼壓力大的人都不會呼吸？' },
+
+  { order:52, cat:'meridian', q:'脊椎在身體上有哪些體表反射區？跟經絡有什麼關聯？', a:'脊椎在身體上有三大體表反射區：<strong>腳</strong>（大拇趾內側往下到腳跟的整條內弓，由上到下對應頸椎到薦尾椎）、<strong>手</strong>（拇指內側或中指整條，由指尖往下依序對應頸椎到薦椎）、<strong>耳</strong>（耳輪呈倒置胎兒形，耳垂對應頭部、耳輪下段到上段對應腰薦椎到頸椎）。其中腳內弓正好是<strong>足少陰腎經</strong>的行走路徑，而<strong>足太陽膀胱經</strong>沿脊椎兩側縱向而行，是脊椎最直接的經絡對應，因此刺激腳內弓（例如山式踩地）等於同時啟動腎經與脊椎反射。', src:'中醫｜脊椎的三大體表反射區——腳內弓、手拇指/中指、耳輪與經絡的連結' }];
+
+    var qaListEl = document.getElementById('qaList');
+    var qaEmptyEl = document.getElementById('qaEmptyState');
+    var qaSearchInput = document.getElementById('qaSearchInput');
+    var qaTagRow = document.getElementById('qaTagRow');
+    var qaActiveCat = 'all';
+
+    document.getElementById('qaTotalCount').textContent = qaQuestions.length;
+
+    function qaRender(){
+      var term = qaSearchInput.value.trim().toLowerCase();
+      var filtered = qaQuestions
+        .filter(function(item){
+          var matchesCat = qaActiveCat === 'all' || item.cat === qaActiveCat;
+          var matchesTerm = !term || (item.q + item.a).toLowerCase().includes(term);
+          return matchesCat && matchesTerm;
+        })
+        .sort(function(a, b){ return a.order - b.order; });
+
+      document.getElementById('qaShownCount').textContent = filtered.length;
+      qaListEl.innerHTML = '';
+
+      if(filtered.length === 0){
+        qaEmptyEl.style.display = 'block';
+        return;
+      }
+      qaEmptyEl.style.display = 'none';
+
+      filtered.forEach(function(item){
+        var wrap = document.createElement('div');
+        wrap.className = 'qa-item';
+        wrap.innerHTML = ''
+          + '<div class="qa-q-row">'
+          + '  <div class="qa-q-text">' + item.q + '</div>'
+          + '  <div class="qa-badge qa-' + item.cat + '">' + QA_CAT_LABEL[item.cat] + '</div>'
+          + '  <svg class="qa-chevron" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>'
+          + '</div>'
+          + '<div class="qa-a-wrap">'
+          + '  <div class="qa-a-text">' + item.a + '</div>'
+          + '</div>';
+        wrap.querySelector('.qa-q-row').addEventListener('click', function(){
+          wrap.classList.toggle('qa-open');
+        });
+        qaListEl.appendChild(wrap);
+      });
+    }
+
+    qaSearchInput.addEventListener('input', qaRender);
+    qaTagRow.addEventListener('click', function(e){
+      var tag = e.target.closest('.qa-tag');
+      if(!tag) return;
+      qaTagRow.querySelectorAll('.qa-tag').forEach(function(t){ t.classList.remove('qa-active'); });
+      tag.classList.add('qa-active');
+      qaActiveCat = tag.dataset.cat;
+      qaRender();
+    });
+
+    qaRender();
+  })();
+  </script>
+
   </div>
 </div>
 </div><!-- /panel-knowledge -->
