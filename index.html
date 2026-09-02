@@ -378,6 +378,56 @@ html, body { overflow-x:hidden; width:100%; }
   font-family:'Cormorant Garamond',serif; font-size:0.80rem;
   letter-spacing:0.25em; color:var(--purple-light); margin-bottom:16px; font-style:italic;
 }
+.entry-date-info {
+  position:relative;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  width:15px; height:15px;
+  margin-left:8px;
+  vertical-align:middle;
+  color:var(--gray-warm);
+  opacity:0.5;
+  cursor:pointer;
+  transition:opacity .15s ease;
+}
+.entry-date-info svg { width:100%; height:100%; }
+.entry-date-info:hover,
+.entry-date-info:focus,
+.entry-date-info.active { opacity:1; }
+.entry-date-tooltip {
+  position:absolute;
+  left:50%; bottom:135%;
+  transform:translateX(-50%) translateY(4px);
+  white-space:nowrap;
+  background:var(--charcoal);
+  color:#fdfbf7;
+  font-family:'Noto Serif TC',serif;
+  font-style:normal;
+  font-size:0.68rem;
+  letter-spacing:0.08em;
+  padding:6px 12px;
+  border-radius:4px;
+  opacity:0;
+  pointer-events:none;
+  transition:opacity .15s ease, transform .15s ease;
+  z-index:5;
+}
+.entry-date-tooltip::after {
+  content:'';
+  position:absolute;
+  top:100%; left:50%;
+  transform:translateX(-50%);
+  border:4px solid transparent;
+  border-top-color:var(--charcoal);
+}
+.entry-date-info:hover .entry-date-tooltip,
+.entry-date-info:focus .entry-date-tooltip,
+.entry-date-info.active .entry-date-tooltip {
+  opacity:1;
+  transform:translateX(-50%) translateY(0);
+  pointer-events:auto;
+}
 .entry-oils-block { margin-bottom:20px; }
 .entry-oils-label {
   font-size:0.62rem; letter-spacing:0.3em; color:var(--gray-warm);
@@ -1040,6 +1090,37 @@ footer {
   <div class="journal-section" style="padding-left:24px; padding-right:24px;">
     <div class="journal-section-title">每週芳療配方日誌</div>
     <div id="entries-container">
+
+      <!-- 2026/09/01 + 2026/09/24（同一份內容，適用兩個日期） -->
+      <article class="entry" data-oils="波旁天竺葵,完全依蘭,廣藿香,甜橙" data-const="" data-meridians="" data-chakra="" data-search-dates="2026/09/01,2026/09/24">
+        <div class="entry-card">
+          <div class="entry-date">2026 / 09 / 01<span class="entry-date-info" tabindex="0"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><line x1="12" y1="8" x2="12" y2="8.01"/><line x1="12" y1="11" x2="12" y2="16"/></svg><span class="entry-date-tooltip">同時適用 09 / 24</span></span></div>
+          <div class="entry-oils-block">
+            <div class="entry-oils-label">本週配方</div>
+            <ul class="entry-oils-list">
+              <li class="oil-pill" data-color="c-geranium">波旁天竺葵</li>
+              <li class="oil-pill" data-color="c-ylang">完全依蘭</li>
+              <li class="oil-pill" data-color="c-patchouli">廣藿香</li>
+              <li class="oil-pill" data-color="c-orange">甜橙</li>
+            </ul>
+          </div>
+          <hr class="entry-divider">
+          <div class="entry-body">
+            <p>這堂課讓大家第一次接觸阿育吠陀三督夏的概念，課後找到自己的主導體質，也為後續幾堂課建立理解的基礎。</p>
+            <p>完全依蘭是三督夏平衡主角，它的花香甜潤，既能安撫Vata的焦慮，又能降低Pitta的急躁，同時為Kapha帶來情感上的流動與喜悅。</p>
+            <p>甜橙味道溫暖開朗，調性輕盈明亮。</p>
+            <p>波旁天竺葵平衡荷爾蒙，讓情緒穩定，香氣介於花香與草本之間。</p>
+            <p>廣藿香的土根特質呼應阿育吠陀回到自然本質的核心。</p>
+            <p>體式練習以平衡緩和為主序列，中間增加脊椎流動的練習幫助我們打造體內更多流動的空間。</p>
+          </div>
+          <div class="entry-meta-tags">
+            <span class="entry-tag-chip" data-color="c-geranium">波旁天竺葵</span>
+            <span class="entry-tag-chip" data-color="c-ylang">完全依蘭</span>
+            <span class="entry-tag-chip" data-color="c-patchouli">廣藿香</span>
+            <span class="entry-tag-chip" data-color="c-orange">甜橙</span>
+          </div>
+        </div>
+      </article>
 
       <!-- 2026/08/20 -->
       <article class="entry" data-oils="岩蘭草,黑雲杉,高地真正薰衣草,乳香" data-const="" data-meridians="" data-chakra="">
@@ -3412,6 +3493,19 @@ document.querySelectorAll('.entry-meridian-chip').forEach(chip => {
   });
 });
 
+// ── ENTRY DATE INFO TOOLTIP (tap support for mobile) ──
+document.querySelectorAll('.entry-date-info').forEach(info => {
+  info.addEventListener('click', e => {
+    e.stopPropagation();
+    const wasActive = info.classList.contains('active');
+    document.querySelectorAll('.entry-date-info.active').forEach(i => i.classList.remove('active'));
+    if (!wasActive) info.classList.add('active');
+  });
+});
+document.addEventListener('click', () => {
+  document.querySelectorAll('.entry-date-info.active').forEach(i => i.classList.remove('active'));
+});
+
 // ── DATE SEARCH ──
 function getMonday(dateStr) {
   const d = new Date(dateStr + 'T00:00:00');
@@ -3425,36 +3519,44 @@ function getMonday(dateStr) {
 }
 
 function doDateSearch() {
-  const val = document.getElementById('dateInput').value;
+  const val = document.getElementById('dateInput').value; // yyyy-mm-dd
   if (!val) return;
-  const monday = getMonday(val);
-  let found = false;
+  const exact = val.replace(/-/g, '/');      // 精確比對字串，如 2026/09/01
+  const monday = getMonday(val);             // 舊制週一比對字串（僅供尚未加上 data-search-dates 的舊日誌使用）
+
   allEntries.forEach(e => {
-    const rawDate = e.querySelector('.entry-date').textContent.replace(/\s/g,'');
-    if (rawDate === monday) { found = true; }
+    if (e.dataset.searchDates) {
+      // 新制：entry 上有 data-search-dates，代表這篇適用多個確切日期（例如同一份內容給不同場館使用）
+      const list = e.dataset.searchDates.split(',').map(s => s.trim());
+      e._dateMatch = list.includes(exact);
+    } else {
+      // 舊制：沿用原本「換算成週一比對」的邏輯，2026/09/01 前的日誌不受影響
+      const rawDate = e.querySelector('.entry-date').textContent.replace(/\s/g,'');
+      e._dateMatch = (rawDate === monday);
+    }
   });
+
+  const matched = allEntries.filter(e => e._dateMatch);
   const msg = document.getElementById('dateResultMsg');
-  if (found) {
+  const displayDate = exact.replace(/\//g,' / ');
+
+  if (matched.length > 0) {
     // mark date filter active, clear other filters
     activeOil = null; activeMeridian = null; activeConst = null;
     document.querySelectorAll('.tag').forEach(t => t.classList.remove('active'));
     document.querySelectorAll('.const-badge').forEach(b => b.classList.remove('active'));
     dateFilterActive = true;
-    allEntries.forEach(e => {
-      const rawDate = e.querySelector('.entry-date').textContent.replace(/\s/g,'');
-      e._dateMatch = (rawDate === monday);
-    });
     // override getVisibleEntries for date
-    visibleEntries = allEntries.filter(e => e._dateMatch);
+    visibleEntries = matched;
     allEntries.forEach(e => { e.style.display = 'none'; });
     visibleEntries.forEach((e,i) => { e.style.display = ''; setTimeout(() => e.classList.add('visible'), i * 70); });
     document.getElementById('noResults').style.display = 'none';
     document.getElementById('paginationBar').style.display = 'none';
-    msg.textContent = '顯示 ' + monday.replace(/\//g,' / ') + ' 當週配方';
+    msg.textContent = '顯示 ' + displayDate + ' 的配方紀錄';
     msg.style.color = 'var(--purple-light)';
     updateChips();
   } else {
-    msg.textContent = '查無 ' + monday.replace(/\//g,' / ') + ' 的配方日誌';
+    msg.textContent = '查無 ' + displayDate + ' 的配方日誌';
     msg.style.color = '#c07878';
   }
 }
