@@ -205,6 +205,10 @@ html, body { overflow-x:hidden; width:100%; }
   flex-shrink:0; position:relative; width:100px; height:180px;
 }
 .body-svg { width:100%; height:100%; }
+.dosha-figure-wrap {
+  flex-shrink:0; position:relative; width:140px; height:140px;
+}
+.dosha-svg { width:100%; height:100%; }
 /* constitution badges around figure */
 .const-badges {
   flex:1; min-width:180px;
@@ -233,6 +237,16 @@ html, body { overflow-x:hidden; width:100%; }
 .c-xueyu   { background:#c07878; } /* 血瘀 muted rose */
 .c-qiyu    { background:#98b0c8; } /* 氣鬱 dusty blue */
 .c-tebing  { background:#d0c0a8; } /* 特稟 warm sand */
+
+/* ayurveda dosha colours */
+.c-prakriti    { background:#c9a227; } /* Prakriti 體質總論 warm gold */
+.c-vata        { background:#8fa3b8; } /* Vata 風/空 slate blue-grey */
+.c-pitta       { background:#cf6a45; } /* Pitta 火/水 terracotta */
+.c-kapha       { background:#7a9868; } /* Kapha 土/水 moss green */
+.c-vatakapha   { background:#80ab9c; } /* Vata-Kapha 藍綠 */
+.c-pittakapha  { background:#b5924f; } /* Pitta-Kapha 琥珀棕 */
+.c-vatapitta   { background:#b17b6d; } /* Vata-Pitta 陶土玫瑰 */
+.c-sattva      { background:#e3d6ae; } /* Sattva 悅性整合 柔金 */
 
 /* active filter strip */
 .active-filters-bar {
@@ -729,6 +743,7 @@ footer {
   .date-input-wrap input[type="date"] { width:130px; font-size:0.80rem; }
   .constitution-wrap { flex-direction:column; gap:12px; }
   .body-figure-wrap { width:80px; height:144px; margin:0 auto; }
+  .dosha-figure-wrap { width:120px; height:120px; margin:0 auto; }
   .const-badges { grid-template-columns:1fr 1fr; width:100%; }
   .const-badge { padding:8px 10px; }
   .const-label { font-size:0.82rem; }
@@ -784,11 +799,81 @@ footer {
     <span class="date-result-msg" id="dateResultMsg"></span>
   </div>
 
+  <!-- 本季主題：阿育吠陀 (open by default) -->
+  <div class="collapsible-section open" id="collapsible-dosha" style="padding-left:24px; padding-right:24px;">
+    <div class="collapsible-header" id="toggleDosha">
+      <span class="collapsible-title">本季主題 · 阿育吠陀</span>
+      <svg class="collapsible-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+    </div>
+    <div class="collapsible-body">
+      <div class="collapsible-body-inner">
+      <div class="constitution-section">
+        <div class="constitution-inner">
+          <!-- 三督夏三角圖 -->
+          <div class="dosha-figure-wrap">
+            <svg class="dosha-svg" viewBox="0 0 200 190" xmlns="http://www.w3.org/2000/svg">
+              <!-- Sattva 悅性光暈，包覆整個三角 -->
+              <circle cx="100" cy="106" r="90" fill="none" stroke="#e3d6ae" stroke-width="1" stroke-dasharray="2,4" opacity="0.7"/>
+              <!-- 三角形邊線 -->
+              <line x1="100" y1="40" x2="172" y2="158" stroke="#c4afd4" stroke-width="1.2" opacity="0.5"/>
+              <line x1="172" y1="158" x2="28" y2="158" stroke="#c4afd4" stroke-width="1.2" opacity="0.5"/>
+              <line x1="28" y1="158" x2="100" y2="40" stroke="#c4afd4" stroke-width="1.2" opacity="0.5"/>
+              <!-- 節點 -->
+              <circle cx="100" cy="14"  r="5"   fill="#e3d6ae" opacity="0.95"/><!-- Sattva -->
+              <circle cx="100" cy="40"  r="5.5" fill="#8fa3b8" opacity="0.95"/><!-- Vata -->
+              <circle cx="172" cy="158" r="5.5" fill="#cf6a45" opacity="0.95"/><!-- Pitta -->
+              <circle cx="28"  cy="158" r="5.5" fill="#7a9868" opacity="0.95"/><!-- Kapha -->
+              <circle cx="136" cy="99"  r="5"   fill="#b17b6d" opacity="0.95"/><!-- Vata-Pitta -->
+              <circle cx="100" cy="158" r="5"   fill="#b5924f" opacity="0.95"/><!-- Pitta-Kapha -->
+              <circle cx="64"  cy="99"  r="5"   fill="#80ab9c" opacity="0.95"/><!-- Vata-Kapha -->
+              <circle cx="100" cy="119" r="5"   fill="#c9a227" opacity="0.95"/><!-- Prakriti -->
+            </svg>
+          </div>
+          <!-- 阿育吠陀主題格子 -->
+          <div class="const-badges">
+            <div class="const-badge" data-dosha="Prakriti">
+              <div class="const-dot c-prakriti"></div>
+              <span class="const-label">Prakriti 體質總論</span>
+            </div>
+            <div class="const-badge" data-dosha="Vata">
+              <div class="const-dot c-vata"></div>
+              <span class="const-label">Vata 風型</span>
+            </div>
+            <div class="const-badge" data-dosha="Pitta">
+              <div class="const-dot c-pitta"></div>
+              <span class="const-label">Pitta 火型</span>
+            </div>
+            <div class="const-badge" data-dosha="Kapha">
+              <div class="const-dot c-kapha"></div>
+              <span class="const-label">Kapha 水型</span>
+            </div>
+            <div class="const-badge" data-dosha="Vata-Kapha">
+              <div class="const-dot c-vatakapha"></div>
+              <span class="const-label">Vata-Kapha 風型-水型</span>
+            </div>
+            <div class="const-badge" data-dosha="Pitta-Kapha">
+              <div class="const-dot c-pittakapha"></div>
+              <span class="const-label">Pitta-Kapha 火型-水型</span>
+            </div>
+            <div class="const-badge" data-dosha="Vata-Pitta">
+              <div class="const-dot c-vatapitta"></div>
+              <span class="const-label">Vata-Pitta 風型-火型</span>
+            </div>
+            <div class="const-badge" data-dosha="Sattva">
+              <div class="const-dot c-sattva"></div>
+              <span class="const-label">Sattva 悅性整合</span>
+            </div>
+          </div>
+        </div>
+      </div>      </div>
+    </div>
+  </div><!-- /collapsible-section dosha -->
+
   <!-- CONSTITUTION COLLAPSIBLE (open by default) -->
-  <!-- 本季主題：七大脈輪 (open by default) -->
-  <div class="collapsible-section open" id="collapsible-chakra" style="padding-left:24px; padding-right:24px;">
+  <!-- 前季主題：七大脈輪 (closed by default) -->
+  <div class="collapsible-section" id="collapsible-chakra" style="padding-left:24px; padding-right:24px;">
     <div class="collapsible-header" id="toggleChakra">
-      <span class="collapsible-title">本季主題 · 七大脈輪</span>
+      <span class="collapsible-title">前季主題 · 七大脈輪</span>
       <svg class="collapsible-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
     </div>
     <div class="collapsible-body">
@@ -942,7 +1027,7 @@ footer {
   <!-- OIL + MERIDIAN FILTER COLLAPSIBLE (closed by default) -->
   <div class="collapsible-section" id="collapsible-filter" style="padding-left:24px; padding-right:24px;">
     <div class="collapsible-header" id="toggleFilter">
-      <span class="collapsible-title">單方精油 · 經絡篩選</span>
+      <span class="collapsible-title">單方精油 · 主題篩選</span>
       <svg class="collapsible-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
     </div>
     <div class="collapsible-body">
@@ -1092,7 +1177,7 @@ footer {
     <div id="entries-container">
 
       <!-- 2026/09/01 + 2026/09/24（同一份內容，適用兩個日期） -->
-      <article class="entry" data-oils="波旁天竺葵,完全依蘭,廣藿香,甜橙" data-const="" data-meridians="" data-chakra="" data-search-dates="2026/09/01,2026/09/24">
+      <article class="entry" data-oils="波旁天竺葵,完全依蘭,廣藿香,甜橙" data-const="" data-meridians="" data-chakra="" data-dosha="Prakriti" data-search-dates="2026/09/01,2026/09/24">
         <div class="entry-card">
           <div class="entry-date">2026 / 09 / 01<span class="entry-date-info" tabindex="0"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><line x1="12" y1="8" x2="12" y2="8.01"/><line x1="12" y1="11" x2="12" y2="16"/></svg><span class="entry-date-tooltip">同時適用 09 / 24</span></span></div>
           <div class="entry-oils-block">
@@ -3277,6 +3362,9 @@ document.querySelectorAll('.tab-btn').forEach(btn => {
 });
 
 // ── COLLAPSIBLE SECTIONS ──
+document.getElementById('toggleDosha').addEventListener('click', () => {
+  document.getElementById('collapsible-dosha').classList.toggle('open');
+});
 document.getElementById('toggleChakra').addEventListener('click', () => {
   document.getElementById('collapsible-chakra').classList.toggle('open');
 });
@@ -3303,6 +3391,7 @@ let activeOil = null;
 let activeMeridian = null;
 let activeConst = null;
 let activeChakra = null;
+let activeDosha = null;
 let dateFilterActive = false;
 
 // ── PAGINATION ──
@@ -3369,10 +3458,12 @@ function matchEntry(entry) {
   const meridians = entry.dataset.meridians || '';
   const constVal = entry.dataset.const || '';
   const chakraVal = entry.dataset.chakra || '';
+  const doshaVal = entry.dataset.dosha || '';
   if (activeOil && !oils.includes(activeOil)) return false;
   if (activeMeridian && !meridians.includes(activeMeridian)) return false;
   if (activeConst && !constVal.includes(activeConst)) return false;
   if (activeChakra && !chakraVal.includes(activeChakra)) return false;
+  if (activeDosha && !doshaVal.includes(activeDosha)) return false;
   return true;
 }
 
@@ -3386,11 +3477,12 @@ function applyFilters() {
 }
 
 function clearAll() {
-  activeOil = null; activeMeridian = null; activeConst = null; activeChakra = null;
+  activeOil = null; activeMeridian = null; activeConst = null; activeChakra = null; activeDosha = null;
   dateFilterActive = false;
   document.querySelectorAll('.tag').forEach(t => t.classList.remove('active'));
   document.querySelectorAll('.const-badge').forEach(b => b.classList.remove('active'));
   document.querySelectorAll('[data-chakra]').forEach(b => b.classList.remove('active'));
+  document.querySelectorAll('[data-dosha]').forEach(b => b.classList.remove('active'));
   document.getElementById('dateInput').value = '';
   document.getElementById('dateResultMsg').textContent = '';
   currentPage = 1;
@@ -3450,6 +3542,16 @@ document.querySelectorAll('[data-chakra]').forEach(badge => {
     const c = badge.dataset.chakra;
     if (activeChakra === c) { activeChakra = null; badge.classList.remove('active'); }
     else { document.querySelectorAll('[data-chakra]').forEach(b => b.classList.remove('active')); badge.classList.add('active'); activeChakra = c; }
+    applyFilters();
+  });
+});
+
+// dosha badge clicks
+document.querySelectorAll('[data-dosha]').forEach(badge => {
+  badge.addEventListener('click', () => {
+    const d = badge.dataset.dosha;
+    if (activeDosha === d) { activeDosha = null; badge.classList.remove('active'); }
+    else { document.querySelectorAll('[data-dosha]').forEach(b => b.classList.remove('active')); badge.classList.add('active'); activeDosha = d; }
     applyFilters();
   });
 });
